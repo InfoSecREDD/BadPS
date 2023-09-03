@@ -562,6 +562,9 @@ function runPayload ($payload) {
       if ($line -match '^ESC(.*)' -Or $line -match '^ESCAPE(.*)') {
         Escape
       }
+      if ($line -match '^SPACE(.*)' -Or $line -match '^SPACEBAR(.*)') {
+        Space
+      }
       if ($line -match '^PRNTSCRN(.*)' -Or $line -match '^PRINTSCREEN(.*)') {
         PrtScrn
       }
