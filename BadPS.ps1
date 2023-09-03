@@ -6,7 +6,7 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.1
+# Version: 2.1.1
 # Target: Windows
 $source = @"
 using System;
