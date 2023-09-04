@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.2
+# Version: 2.2.0
 # Target: Windows
-$version = 2.2.0
+$version = "2.2.0"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -75,12 +75,31 @@ $specialKeys = @{
     'PRINT'    = [System.Windows.Forms.Keys]::PrintScreen
     'PAUSE'    = [System.Windows.Forms.Keys]::Pause
 }
+function VersionNewer($version, $onlineVersion) {
+    $components = $version -split '\.'
+    $onlineComponents = $onlineVersion -split '\.'
+    if ($components.Count -lt 2 -or $onlineComponents.Count -lt 2) {
+        return $false
+    }
+    $Major = [int]$components[0]
+    $Minor = [int]$components[1]
+    $onlineMajor = [int]$onlineComponents[0]
+    $onlineMinor = [int]$onlineComponents[1]
+    if ($Major -lt $onlineMajor) {
+        return $true
+    } elseif ($Major -eq $onlineMajor -and $Minor -lt $onlineMinor) {
+        return $true
+    }
+    return $false
+}
 $atos = "$pwd/setting.db"
+$BpPID = $PID
+$URL = "https://raw.githubusercontent.com/InfoSecREDD/BadPS/main/BadPS.ps1"
 $windowHeight = $Host.UI.RawUI.WindowSize.Height
 $windowWidth = $Host.UI.RawUI.WindowSize.Width
+$fileName = $MyInvocation.MyCommand.Name
 if ($args.Count -gt 0) {
   if ($args -eq '--help' -Or $args -eq '-help' -Or $args -eq 'help') {
-    $fileName = $MyInvocation.MyCommand.Name
     Write-Host "`n`nBadPS Examples:"
     Write-Host ".`\$fileName `<badusb_file.txt`>        - Launch a BadUSB payload"
     Write-Host ".`\$fileName                          - Launch BadPS in Dev Mode"
@@ -88,11 +107,57 @@ if ($args.Count -gt 0) {
     Write-Host "Supported BadUSB Commands:"
     Write-Host "DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, PRINTSCREEN, GUI, ALT, CTRL, SHIFT, ESCAPE, "
     Write-Host "CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI, CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING/ALTSTRING,"
-    Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT`n"
+    Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE`n"
     Write-Host "Un-Supported BadUSB Commands:"
     Write-Host "DEFINE, EXFIL, CTRL-ALT DELETE (due to Windows Limits), ALTCODE, Unknown`n`n`n"
     exit
   }
+  if ($args -eq '--update' -Or $args -eq '-update' -Or $args -eq 'update') {
+    Write-Host "Checking GitHub for newer release..."
+    $content = Invoke-RestMethod -Uri $url
+    if ($content) {
+      $lines = $content -split "`r`n"
+      if ($lines.Count -ge 11) {
+        $versionLine = $lines[10]
+        $lineParts = $versionLine -split '\s+'
+        if ($lineParts.Count -ge 2) {
+          $versionNumber = $lineParts[-1]
+        }
+      }
+    }
+    if (VersionNewer $version $versionNumber) {
+      Write-Host "`nNEWER VERSION DETECTED`!`n`nGithub Version: $versionNumber`nLocal Version: $version`n"
+      $updateConfirm = ""
+      $updateConfirm = Read-Host "Are you sure you want to update? (y`/N)" 
+      if ( $updateConfirm -eq "yes" -Or $updateConfirm -eq "y" -Or $updateConfirm -eq "Y" ) {
+        if (Test-Path "UPDATE-$fileName")
+        {
+          Remove-Item -Path "UPDATE-$fileName" -Force -Recurse  >$null 2>&1
+        }
+        if (!(Test-Path "UPDATE-$fileName"))
+        {
+          New-Item -Path "$pwd" -Name "UPDATE-$fileName" -ItemType File  >$null 2>&1
+        }
+        "$content" | Out-File -FilePath "UPDATE-$fileName"
+        if (Test-Path "OLD-$fileName")
+        {
+          Remove-Item -Path "OLD-$fileName" -Force -Recurse  >$null 2>&1
+        }
+        Write-Host "  --> Updating now`!"
+        Sleep 3
+        Rename-Item -Path "$pwd\$fileName" -NewName "OLD-$fileName"
+        Remove-Item -Path "$fileName" -Force -Recurse  >$null 2>&1
+        Rename-Item -Path "$pwd\UPDATE-$fileName" -NewName "$fileName"
+        Remove-Item -Path "OLD-$fileName" -Force -Recurse  >$null 2>&1
+        Write-Host "`n${BG}  --`> Finished Updating from $version to $versionNumber`!"
+      }
+    Write-Host "`n`n"
+    exit 0
+    } else {
+      Write-Host "Github Version: $versionNumber`nLocal Version: $version`n`nNo update needed.`n`n"
+      exit 0
+    }
+  } 
 }
 if ($args.Count -eq 0) {
     if (!(Test-Path "$atos")) {
@@ -674,53 +739,99 @@ function runMenu {
     Sleep 5
     Clear-Host; Clear-Host
   }
-  $currentDirectory = Get-Location
-  $txtFiles = Get-ChildItem -Path $currentDirectory -Filter *.txt
-  Write-Host "`n`n`n${Gy}            :::::::::      :::     :::::::::  :::    :::  ::::::::  :::::::::    "
-  Write-Host "           ${Gy}:${R}+${Gy}:    :${R}+${Gy}:   :${R}+${Gy}: :${R}+${Gy}:   :${R}+${Gy}:    :${R}+${Gy}: :${R}+${Gy}:    :${R}+${Gy}: :${R}+${Gy}:    :${R}+${Gy}: :${R}+${Gy}:    :${R}+${Gy}:    "
-  Write-Host "          ${R}+${Gy}:${R}+    +${Gy}:${R}+  +${Gy}:${R}+   +${Gy}:${R}+  +${Gy}:${R}+    +${Gy}:${R}+ +${Gy}:${R}+    +${Gy}:${R}+ +${Gy}:${R}+        +${Gy}:${R}+    +${Gy}:${R}+     "
-  Write-Host "         ${R}+${BR}#${R}++:${R}++${BR}#${R}+  +${BR}#${R}++:${R}++${BR}#${R}++: ${R}+${BR}#${R}+    +:${R}+ +${BR}#${R}+    +:${R}+ +${BR}#${R}++:${R}++${BR}#${R}++ +${BR}#${R}++:${R}++${BR}#${R}+       "
-  Write-Host "        ${R}+${BR}#${R}+    +${BR}#${R}+ +${BR}#${R}+     +${BR}#${R}+ +${BR}#${R}+    +${BR}#${R}+ +${BR}#${R}+    +${BR}#${R}+        +${BR}#${R}+ +${BR}#${R}+    +${BR}#${R}+       "
-  Write-Host "       ${BR}#${R}+${BR}#    #${R}+${BR}# #${R}+${BR}#     #${R}+${BR}# #${R}+${BR}#    #${R}+${BR}# #${R}+${BR}#    #${R}+${BR}# #${R}+${BR}#    #${R}+${BR}# #${R}+${BR}#    #${R}+${BR}#        "
-  Write-Host "      ${BR}#########  ###     ### #########   ########   ########  #########          `n"
-  Write-Host "${Gy}        :::::::::     :::   :::   ::: :::        ::::::::      :::     ::::::::: "
-  Write-Host "       ${Gy}:${R}+${Gy}:    :${R}+${Gy}:  :${R}+${Gy}: :${R}+${Gy}: :${R}+${Gy}:   :${R}+${Gy}: :${R}+${Gy}:       :${R}+${Gy}:    :${R}+${Gy}:   :${R}+${Gy}: :${R}+${Gy}:   :${R}+${Gy}:    :${R}+${Gy}: "
-  Write-Host "      ${R}+${Gy}:${R}+    +${Gy}:${R}+ +${Gy}:${R}+   +${Gy}:${R}+ +${Gy}:${R}+ +${Gy}:${R}+  +${Gy}:${R}+       +${Gy}:${R}+    +${Gy}:${R}+  +${Gy}:${R}+   +${Gy}:${R}+  +${Gy}:${R}+    +${Gy}:${R}+  "
-  Write-Host "     ${R}+${BR}#${R}++${Gy}:${R}++${BR}#${R}+ +${BR}#${R}++${Gy}:${R}++${BR}#++${Gy}:${R} +${BR}#${R}++${Gy}:   ${R}+${BR}#${R}+       +${BR}#${R}+    +${Gy}:${R}+ +${BR}#${R}++${Gy}:${R}++${BR}#${R}++${Gy}: ${R}+${BR}#${R}+    +${Gy}:${R}+   "
-  Write-Host "    ${R}+${BR}#${R}+       +${BR}#${R}+     +${BR}#${R}+  +${BR}#${R}+    +${BR}#${R}+       +${BR}#${R}+    +${BR}#${R}+ +${BR}#${R}+     +${BR}#${R}+ +${BR}#${R}+    +${BR}#${R}+    "
-  Write-Host "   ${BR}#${R}+${BR}#       #${R}+${BR}#     #${R}+${BR}#  #${R}+${BR}#    #${R}+${BR}#       #${R}+${BR}#    #${R}+${BR}# #${R}+${BR}#     #${R}+${BR}# #${R}+${BR}#    #${R}+${BR}#     "
-  Write-Host "  ${BR}###       ###     ###  ###    ########## ########  ###     ### #########       `n"
-  Write-Host "                             ${BG}D${G}evelopment ${BG}L${G}auncher"
-  Write-Host "                                By InfoSecREDD   `n`n"
-  Write-Host " ${C}-------------------------------------------------------------------------------"
-  Write-Host "               ${BW}All TXT (${R}BadUSB${BW}) files in Current Directory${Gy}:"
-  Write-Host " ${C}-------------------------------------------------------------------------------`n"
-  for ($i = 0; $i -lt $txtFiles.Count; $i++) {
-    Write-Host " ${BW}    $($i + 1). ${W}$($txtFiles[$i].Name)"
-  }
-  Write-Host "`n`n ${BW}    0. ${BR}Exit"
-  Write-Host "`n"
-  Write-Host "${C} -------------------------------------------------------------------------------`n"
   do {
+    Clear-Host
+    $currentDirectory = Get-Location
+    $txtFiles = Get-ChildItem -Path $currentDirectory -Filter *.txt
+    Write-Host "`n`n`n${Gy}            :::::::::      :::     :::::::::  :::    :::  ::::::::  :::::::::    "
+    Write-Host "           ${Gy}:${R}+${Gy}:    :${R}+${Gy}:   :${R}+${Gy}: :${R}+${Gy}:   :${R}+${Gy}:    :${R}+${Gy}: :${R}+${Gy}:    :${R}+${Gy}: :${R}+${Gy}:    :${R}+${Gy}: :${R}+${Gy}:    :${R}+${Gy}:    "
+    Write-Host "          ${R}+${Gy}:${R}+    +${Gy}:${R}+  +${Gy}:${R}+   +${Gy}:${R}+  +${Gy}:${R}+    +${Gy}:${R}+ +${Gy}:${R}+    +${Gy}:${R}+ +${Gy}:${R}+        +${Gy}:${R}+    +${Gy}:${R}+     "
+    Write-Host "         ${R}+${BR}#${R}++:${R}++${BR}#${R}+  +${BR}#${R}++:${R}++${BR}#${R}++: ${R}+${BR}#${R}+    +:${R}+ +${BR}#${R}+    +:${R}+ +${BR}#${R}++:${R}++${BR}#${R}++ +${BR}#${R}++:${R}++${BR}#${R}+       "
+    Write-Host "        ${R}+${BR}#${R}+    +${BR}#${R}+ +${BR}#${R}+     +${BR}#${R}+ +${BR}#${R}+    +${BR}#${R}+ +${BR}#${R}+    +${BR}#${R}+        +${BR}#${R}+ +${BR}#${R}+    +${BR}#${R}+       "
+    Write-Host "       ${BR}#${R}+${BR}#    #${R}+${BR}# #${R}+${BR}#     #${R}+${BR}# #${R}+${BR}#    #${R}+${BR}# #${R}+${BR}#    #${R}+${BR}# #${R}+${BR}#    #${R}+${BR}# #${R}+${BR}#    #${R}+${BR}#        "
+    Write-Host "      ${BR}#########  ###     ### #########   ########   ########  #########          `n"
+    Write-Host "${Gy}        :::::::::     :::   :::   ::: :::        ::::::::      :::     ::::::::: "
+    Write-Host "       ${Gy}:${R}+${Gy}:    :${R}+${Gy}:  :${R}+${Gy}: :${R}+${Gy}: :${R}+${Gy}:   :${R}+${Gy}: :${R}+${Gy}:       :${R}+${Gy}:    :${R}+${Gy}:   :${R}+${Gy}: :${R}+${Gy}:   :${R}+${Gy}:    :${R}+${Gy}: "
+    Write-Host "      ${R}+${Gy}:${R}+    +${Gy}:${R}+ +${Gy}:${R}+   +${Gy}:${R}+ +${Gy}:${R}+ +${Gy}:${R}+  +${Gy}:${R}+       +${Gy}:${R}+    +${Gy}:${R}+  +${Gy}:${R}+   +${Gy}:${R}+  +${Gy}:${R}+    +${Gy}:${R}+  "
+    Write-Host "     ${R}+${BR}#${R}++${Gy}:${R}++${BR}#${R}+ +${BR}#${R}++${Gy}:${R}++${BR}#++${Gy}:${R} +${BR}#${R}++${Gy}:   ${R}+${BR}#${R}+       +${BR}#${R}+    +${Gy}:${R}+ +${BR}#${R}++${Gy}:${R}++${BR}#${R}++${Gy}: ${R}+${BR}#${R}+    +${Gy}:${R}+   "
+    Write-Host "    ${R}+${BR}#${R}+       +${BR}#${R}+     +${BR}#${R}+  +${BR}#${R}+    +${BR}#${R}+       +${BR}#${R}+    +${BR}#${R}+ +${BR}#${R}+     +${BR}#${R}+ +${BR}#${R}+    +${BR}#${R}+    "
+    Write-Host "   ${BR}#${R}+${BR}#       #${R}+${BR}#     #${R}+${BR}#  #${R}+${BR}#    #${R}+${BR}#       #${R}+${BR}#    #${R}+${BR}# #${R}+${BR}#     #${R}+${BR}# #${R}+${BR}#    #${R}+${BR}#     "
+    Write-Host "  ${BR}###       ###     ###  ###    ########## ########  ###     ### #########       `n"
+    Write-Host "                             ${BG}D${G}evelopment ${BG}L${G}auncher"
+    Write-Host "                                By InfoSecREDD   `n                                Version: $version`n`n"
+    Write-Host " ${C}-------------------------------------------------------------------------------"
+    Write-Host "               ${BW}All TXT (${R}BadUSB${BW}) files in Current Directory${Gy}:"
+    Write-Host " ${C}-------------------------------------------------------------------------------`n"
+    for ($i = 0; $i -lt $txtFiles.Count; $i++) {
+      Write-Host " ${BW}    $($i + 1). ${W}$($txtFiles[$i].Name)"
+    }
+    Write-Host "`n`n ${BW}    0. ${BR}Exit"
+    Write-Host "`n"
+    Write-Host "${C} -------------------------------------------------------------------------------`n"
     $userInput = Read-Host "  ${BW}Select ${BC}#${BW} and Press ENTER"
+    if ($userInput -eq 'update' -or $userInput -eq 'u') {
+      Write-Host "`n`nChecking GitHub for newer release..."
+      $content = Invoke-RestMethod -Uri $url
+      if ($content) {
+        $lines = $content -split "`r`n"
+        if ($lines.Count -ge 11) {
+          $versionLine = $lines[10]
+          $lineParts = $versionLine -split '\s+'
+          if ($lineParts.Count -ge 2) {
+            $versionNumber = $lineParts[-1]
+          }
+        }
+      }
+      if (VersionNewer $version $versionNumber) {
+        Write-Host "`n${BY}NEWER VERSION DETECTED`!`n`n${W}Github Version: $versionNumber`nLocal Version: $version`n"
+        $updateConfirm = ""
+        $updateConfirm = Read-Host "Are you sure you want to update? (y`/N)" 
+        if ( $updateConfirm -eq "yes" -Or $updateConfirm -eq "y" -Or $updateConfirm -eq "Y" ) {
+          if (Test-Path "UPDATE-$fileName") {
+            Remove-Item -Path "UPDATE-$fileName" -Force -Recurse  >$null 2>&1
+          }
+          if (!(Test-Path "UPDATE-$fileName")) {
+            New-Item -Path "$pwd" -Name "UPDATE-$fileName" -ItemType File  >$null 2>&1
+          }
+          "$content" | Out-File -FilePath "UPDATE-$fileName"
+          if (Test-Path "OLD-$fileName")
+          {
+            Remove-Item -Path "OLD-$fileName" -Force -Recurse  >$null 2>&1
+          }
+          Write-Host "`n${BR}  --`> Updating now`!`n`n"
+          sleep 3
+          Rename-Item -Path "$pwd\$fileName" -NewName "OLD-$fileName"
+          Remove-Item -Path "$fileName" -Force -Recurse  >$null 2>&1
+          Rename-Item -Path "$pwd\UPDATE-$fileName" -NewName "$fileName"
+          Remove-Item -Path "OLD-$fileName" -Force -Recurse  >$null 2>&1
+          Write-Host "`n${BG}  --`> Finished Updating from $version to $versionNumber`!`n`n${BC}  --`> Closing old Version and starting new Version.. Please wait.."
+          sleep 5
+          Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -File $pwd\$fileName"
+          Stop-Process -Id $BpPID -Force
+        } 
+      } else {
+        Write-Host "Github Version: $versionNumber`nLocal Version: $version`n`nNo update needed."
+      } 
+      Clear-Host
+    }
   } while (-not [int]::TryParse($userInput, [ref]$null))
-  $selectedIndex = [int]$userInput - 1 
-  $totalFiles = $txtFiles.Count
-  if ($selectedIndex -eq -1) {
-    Clear-Host
-    Write-Host "`n`nExiting the script... Please wait.`n`n"
-    Write-Host "                                                                                                                                            `n             ${BW} `"I would personally like to Thank EVERYONE! It has been fun!`"`n                                                   ${W}-InfoSecREDD`n`n`n`n`n" 
-    Sleep 5
-    $Host.UI.RawUI.BackgroundColor = $initialBackgroundColor
-    resize -height $windowHeight -width $windowWidth >$null 2>&1
-    Clear-Host
-    exit
-  } elseif ($selectedIndex -ge 0 -and $selectedIndex -lt $txtFiles.Count) {
-    $selectedFile = $txtFiles[$selectedIndex]
-    $file = $($selectedFile.Name)
-    Write-Host "`n`nUser selected: ${BY}$($selectedFile.Name)`n"
-    $confirm = ""
-    $confirm = Read-Host "You are about to run $($selectedFile.Name). Are you sure? (y`/N)" 
+    $selectedIndex = [int]$userInput - 1 
+    $totalFiles = $txtFiles.Count
+    if ($selectedIndex -eq -1) {
+      Clear-Host
+      Write-Host "`n`nExiting the script... Please wait.`n`n"
+      Write-Host "                                                                                                                                            `n             ${BW} `"I would personally like to Thank EVERYONE! It has been fun!`"`n                                                   ${W}-InfoSecREDD`n`n`n`n`n" 
+      Sleep 5
+      $Host.UI.RawUI.BackgroundColor = $initialBackgroundColor
+      resize -height $windowHeight -width $windowWidth >$null 2>&1
+      Clear-Host
+      exit
+    } elseif ($selectedIndex -ge 0 -and $selectedIndex -lt $txtFiles.Count) {
+      $selectedFile = $txtFiles[$selectedIndex]
+      $file = $($selectedFile.Name)
+      Write-Host "`n`nUser selected: ${BY}$($selectedFile.Name)`n"
+      $confirm = ""
+      $confirm = Read-Host "You are about to run $($selectedFile.Name). Are you sure? (y`/N)" 
     if ( $confirm -eq "yes" -Or $confirm -eq "y" -Or $confirm -eq "Y" ) {
       Write-Host "`n   Running file now..."
       runPayload 
@@ -736,6 +847,7 @@ function runMenu {
     Write-Host "${R}ERROR${W} - Select # between${Y} 0 ${W}and${Y} $totalFiles ${W}and Press ENTER."
     sleep 4
   }
+
 }
 $initialBackgroundColor = $Host.UI.RawUI.BackgroundColor
 $initialWindowSize = $Host.UI.RawUI.WindowSize
