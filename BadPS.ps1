@@ -8,7 +8,7 @@
 # AUTHOR: InfoSecREDD
 # Version: 2.2
 # Target: Windows
-version = 2.2.0
+$version = 2.2.0
 $source = @"
 using System;
 using System.Collections.Generic;
