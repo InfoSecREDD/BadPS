@@ -15,10 +15,16 @@ BadPS Examples:
 Supported BadUSB Commands:
 DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, PRINTSCREEN, GUI, ALT, CTRL, SHIFT, ESCAPE,
 CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI, CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING/ALTSTRING,
-TAB, SCROLLLOCK, CAPSLOCK, INSERT
+TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE
 
 Un-Supported BadUSB Commands:
 DEFINE, EXFIL, CTRL-ALT DELETE (due to Windows Limits), ALTCODE, Unknown
 
 
 ```
+
+## Updating the Project
+We have made it about as easy as possible.
+```PS> .\BadPS.ps1 --update```
+OR
+Just type ``` update ``` in Dev Mode.
