@@ -102,6 +102,7 @@ if ($args.Count -gt 0) {
   if ($args -eq '--help' -Or $args -eq '-help' -Or $args -eq 'help') {
     Write-Host "`n`nBadPS Examples:"
     Write-Host ".`\$fileName `<badusb_file.txt`>        - Launch a BadUSB payload"
+    Write-Host ".`\$fileName --update                 - Update BadPS to current Version"
     Write-Host ".`\$fileName                          - Launch BadPS in Dev Mode"
     Write-Host "`n"
     Write-Host "Supported BadUSB Commands:"
