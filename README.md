@@ -9,6 +9,7 @@ This tool was created to give people the ability to develop BadUSB payloads with
 
 BadPS Examples:
 .\BadPS.ps1 <badusb_file.txt>        - Launch a BadUSB payload
+.\BadPS.ps1 --update                 - Update BadPS to current Version
 .\BadPS.ps1                          - Launch BadPS in Dev Mode
 
 
@@ -28,3 +29,7 @@ We have made it about as easy as possible.
 ```PS> .\BadPS.ps1 --update```
 OR
 Just type ``` update ``` in Dev Mode.
+
+
+## Contributions
+Want to help improve the project? Pull Requests Welcome!
