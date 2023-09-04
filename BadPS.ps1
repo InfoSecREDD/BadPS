@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.2.0
+# Version: 2.2.1
 # Target: Windows
-$version = "2.2.0"
+$version = "2.2.1"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -103,6 +103,7 @@ if ($args.Count -gt 0) {
     Write-Host "`n`nBadPS Examples:"
     Write-Host ".`\$fileName `<badusb_file.txt`>        - Launch a BadUSB payload"
     Write-Host ".`\$fileName --update                 - Update BadPS to current Version"
+    Write-Host ".`\$fileName --version                - Show local Version of BadPS"
     Write-Host ".`\$fileName                          - Launch BadPS in Dev Mode"
     Write-Host "`n"
     Write-Host "Supported BadUSB Commands:"
@@ -111,7 +112,11 @@ if ($args.Count -gt 0) {
     Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE`n"
     Write-Host "Un-Supported BadUSB Commands:"
     Write-Host "DEFINE, EXFIL, CTRL-ALT DELETE (due to Windows Limits), ALTCODE, Unknown`n`n`n"
-    exit
+    exit 0
+  }
+  if ($args -eq '--version' -Or $args -eq '-version' -Or $args -eq '-v' -Or $args -eq 'version') {
+    Write-Host "`nCurrent Version: $version`n`n"
+    exit 0
   }
   if ($args -eq '--update' -Or $args -eq '-update' -Or $args -eq 'update') {
     Write-Host "Checking GitHub for newer release..."
