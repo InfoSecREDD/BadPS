@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.2.1
+# Version: 2.2.2
 # Target: Windows
-$version = "2.2.1"
+$version = "2.2.2"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -98,6 +98,24 @@ $URL = "https://raw.githubusercontent.com/InfoSecREDD/BadPS/main/BadPS.ps1"
 $windowHeight = $Host.UI.RawUI.WindowSize.Height
 $windowWidth = $Host.UI.RawUI.WindowSize.Width
 $fileName = $MyInvocation.MyCommand.Name
+function VersionNewer($version, $onlineVersion) {
+  $components = $version -split '\.'
+  $onlineComponents = $onlineVersion -split '\.'
+  if ($components.Count -lt 2 -or $onlineComponents.Count -lt 2) {
+    return $false
+  }
+  $numComponents = [Math]::Max($components.Count, $onlineComponents.Count)
+  for ($i = 0; $i -lt $numComponents; $i++) {
+    $localComponent = if ($i -lt $components.Count) { [int]$components[$i] } else { 0 }
+    $onlineComponent = if ($i -lt $onlineComponents.Count) { [int]$onlineComponents[$i] } else { 0 }
+    if ($localComponent -lt $onlineComponent) {
+      return $true
+    } elseif ($localComponent -gt $onlineComponent) {
+      return $false
+    }
+  }
+  return $false
+}
 if ($args.Count -gt 0) {
   if ($args -eq '--help' -Or $args -eq '-help' -Or $args -eq 'help') {
     Write-Host "`n`nBadPS Examples:"
@@ -128,6 +146,7 @@ if ($args.Count -gt 0) {
         $lineParts = $versionLine -split '\s+'
         if ($lineParts.Count -ge 2) {
           $versionNumber = $lineParts[-1]
+          $versionNumber = $versionNumber -replace '"', ''
         }
       }
     }
@@ -785,6 +804,7 @@ function runMenu {
           $lineParts = $versionLine -split '\s+'
           if ($lineParts.Count -ge 2) {
             $versionNumber = $lineParts[-1]
+            $versionNumber = $versionNumber -replace '"', ''
           }
         }
       }
@@ -816,7 +836,8 @@ function runMenu {
           Stop-Process -Id $BpPID -Force
         } 
       } else {
-        Write-Host "Github Version: $versionNumber`nLocal Version: $version`n`nNo update needed."
+        Write-Host "Github Version: $versionNumber`nLocal Version: $version`n`nNo update needed.`n`n"
+        Sleep 5
       } 
       Clear-Host
     }
