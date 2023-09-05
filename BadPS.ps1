@@ -127,7 +127,7 @@ if ($args.Count -gt 0) {
     Write-Host "Supported BadUSB Commands:"
     Write-Host "DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, PRINTSCREEN, GUI, ALT, CTRL, SHIFT, ESCAPE, "
     Write-Host "CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI, CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING/ALTSTRING,"
-    Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE`n"
+    Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, RELEASE, HOLD`n"
     Write-Host "Un-Supported BadUSB Commands:"
     Write-Host "DEFINE, EXFIL, CTRL-ALT DELETE (due to Windows Limits), ALTCODE, Unknown`n`n`n"
     exit 0
