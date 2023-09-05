@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.2.2
+# Version: 2.2.3
 # Target: Windows
-$version = "2.2.2"
+$version = "2.2.3"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -266,6 +266,38 @@ function resize {
   $newsize = $pswindow.windowsize
   $newsize.width = $width
   $pswindow.windowsize = $newsize
+}
+function hold 
+{
+    param (
+        $key
+    ) 
+  $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
+  $chkKey = $specialKeys[$key]
+  if ( $key -ne '' -And $key -ne ' ' ) {
+    if ($chkKey -in $specialKeys) {
+      [KeyboardSend.KeyboardSend]::KeyDown($key)
+    }
+    else {
+      [KeyboardSend.KeyboardSend]::KeyDown($key)
+    }
+  }
+}
+function release 
+{
+    param (
+        $key
+    ) 
+  $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
+  $chkKey = $specialKeys[$key]
+  if ( $key -ne '' -And $key -ne ' ' ) {
+    if ($chkKey -in $specialKeys) {
+      [KeyboardSend.KeyboardSend]::KeyUp($key)
+    }
+    else {
+      [KeyboardSend.KeyboardSend]::KeyUp($key)
+    }
+  }
 }
 function PageUp
 {
@@ -680,6 +712,24 @@ function runPayload ($payload) {
           Ctrl "$char"
         } else {
           Ctrl
+        }
+      }
+      if ($line -match '^HOLD (.*)' -Or $line -match '^HLD (.*)') {
+        $char = $matches[1]
+        if ($char -ne '' -Or $char -ne ' ') { 
+          $charArray = $char.Split(' ')
+          $result = $charArray[0]
+          $char = "$result"
+          hold "$char"
+        }
+      }
+      if ($line -match '^RELEASE (.*)' -Or $line -match '^REL (.*)') {
+        $char = $matches[1]
+        if ($char -ne '' -Or $char -ne ' ') { 
+          $charArray = $char.Split(' ')
+          $result = $charArray[0]
+          $char = "$result"
+          release "$char"
         }
       }
       if ($line -match '^ALT (.*)' -Or $line -match '^ALT-(.*)') {
