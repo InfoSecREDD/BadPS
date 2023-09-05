@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.2.3
+# Version: 2.2.4
 # Target: Windows
-$version = "2.2.3"
+$version = "2.2.4"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -75,23 +75,6 @@ $specialKeys = @{
     'PRINT'    = [System.Windows.Forms.Keys]::PrintScreen
     'PAUSE'    = [System.Windows.Forms.Keys]::Pause
 }
-function VersionNewer($version, $onlineVersion) {
-    $components = $version -split '\.'
-    $onlineComponents = $onlineVersion -split '\.'
-    if ($components.Count -lt 2 -or $onlineComponents.Count -lt 2) {
-        return $false
-    }
-    $Major = [int]$components[0]
-    $Minor = [int]$components[1]
-    $onlineMajor = [int]$onlineComponents[0]
-    $onlineMinor = [int]$onlineComponents[1]
-    if ($Major -lt $onlineMajor) {
-        return $true
-    } elseif ($Major -eq $onlineMajor -and $Minor -lt $onlineMinor) {
-        return $true
-    }
-    return $false
-}
 $atos = "$pwd/setting.db"
 $BpPID = $PID
 $URL = "https://raw.githubusercontent.com/InfoSecREDD/BadPS/main/BadPS.ps1"
@@ -127,7 +110,7 @@ if ($args.Count -gt 0) {
     Write-Host "Supported BadUSB Commands:"
     Write-Host "DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, PRINTSCREEN, GUI, ALT, CTRL, SHIFT, ESCAPE, "
     Write-Host "CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI, CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING/ALTSTRING,"
-    Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, RELEASE, HOLD`n"
+    Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, RELEASE, HOLD, PAUSE, ALTCHAR`n"
     Write-Host "Un-Supported BadUSB Commands:"
     Write-Host "DEFINE, EXFIL, CTRL-ALT DELETE (due to Windows Limits), ALTCODE, Unknown`n`n`n"
     exit 0
@@ -333,6 +316,11 @@ function ScrLk
 {
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Scroll)
   [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::Scroll)
+}
+function kPause
+{
+  [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Pause)
+  [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::Pause)
 }
 function Insert
 {
@@ -608,6 +596,23 @@ function SendKeys {
     }
   }
 }
+function SendAltChar {
+    param (
+        [string]$AltChar
+    )
+  $wshell = New-Object -ComObject wscript.shell
+  if ($AltChar) {
+    $keyString = [char]::ConvertFromUtf32($AltChar)
+    $wshell.SendKeys("%{$keyString}")
+    if (!([string]::IsNullOrEmpty($delayDefault))) {
+      Start-Sleep -Milliseconds $delayDefault
+    }
+    else
+    {
+      Start-Sleep -Milliseconds 10
+    }
+  }
+}
 function runPayload ($payload) {
   $filePath = "$file"
   if (Test-Path $filePath -PathType Leaf) {
@@ -743,8 +748,11 @@ function runPayload ($payload) {
           Alt
         }
       }
-      if ($line -match '^INSERT (.*)') {
+      if ($line -match '^INSERT(.*)') {
         Insert
+      }
+      if ($line -match '^PAUSE(.*)' -Or $line -match '^BREAK(.*)') {
+        kPause
       }
       if ($line -match '^BACKSPACE(.*)') {
         Backspace
@@ -794,6 +802,10 @@ function runPayload ($payload) {
             SendKeys -SENDKEYS "{$char}"
           }
         }
+      }
+      if ($line -match '^ALTCHAR (.*)' -Or $line -match '^ALTNUM (.*)') {
+        $chars = $matches[1]
+        SendAltChar "$chars"
       }
     }
   } 
