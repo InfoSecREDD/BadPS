@@ -17,13 +17,13 @@ BadPS Examples:
 .\BadPS.ps1                          - Launch BadPS in Dev Mode
 
 
-Supported BadUSB Commands:
+Supported Flipper BadUSB Core Commands:
 DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, PRINTSCREEN, GUI, ALT, CTRL, SHIFT, ESCAPE,
 CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI, CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING/ALTSTRING,
-TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, RELEASE, HOLD, REPEAT
+TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, RELEASE, HOLD, REPEAT, ALT-CHAR
 
 Un-Supported BadUSB Commands:
-DEFINE, EXFIL, CTRL-ALT DELETE (due to Windows Limits), ALTCODE, Unknown
+ CTRL-ALT DELETE (due to Windows Limits), Unknown
 
 
 ```
