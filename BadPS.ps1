@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.2.6
+# Version: 2.2.7
 # Target: Windows
-$version = "2.2.6"
+$version = "2.2.7"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -49,6 +49,8 @@ $specialKeys = @{
     'SPACE'    = [System.Windows.Forms.Keys]::Space
     'PAGEUP'   = [System.Windows.Forms.Keys]::PageUp
     'PAGEDOWN' = [System.Windows.Forms.Keys]::PageDown
+    'APPS'     = [System.Windows.Forms.Keys]::Applications
+    'MENU'     = [System.Windows.Forms.Keys]::Applications
     'END'      = [System.Windows.Forms.Keys]::End
     'HOME'     = [System.Windows.Forms.Keys]::Home
     'LEFT'     = [System.Windows.Forms.Keys]::Left
@@ -114,8 +116,8 @@ if ($args.Count -gt 0) {
     Write-Host "`n"
     Write-Host "Supported Flipper BadUSB Core Commands:"
     Write-Host "DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, PRINTSCREEN, GUI, ALT, CTRL, SHIFT, ESCAPE, "
-    Write-Host "CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI, CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING/ALTSTRING,"
-    Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, RELEASE, HOLD, PAUSE, REPEAT, ALTCHAR`n"
+    Write-Host "CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI, CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING,"
+    Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, RELEASE, HOLD, PAUSE, REPEAT, ALTCHAR, ALTSTRING`n"
     Write-Host "Un-Supported BadUSB Commands:"
     Write-Host " CTRL-ALT DELETE (due to Windows Limits), Unknown`n`n`n"
     exit 0
@@ -462,10 +464,11 @@ function Shift
 }
 function AltChar {
     param (
-        [string]$inputCode
+        [string]$inputCode,
+        [string]$AltString
     )
- $inputCode = $inputCode.Trim()
- $altCodeMapping = @{
+  $inputCode = $inputCode.Trim()
+  $altCodeMapping = @{
     "1" = [char]0x263A; "2" = [char]0x263B; "3" = [char]0x2665; "4" = [char]0x2666; "5" = [char]0x2663;
     "6" = [char]0x2660; "7" = [char]0x2022; "8" = [char]0x25D8; "9" = [char]0x25CB; "10" = [char]0x25D9;
     "11" = [char]0x2642; "12" = [char]0x2640; "13" = [char]0x266A; "14" = [char]0x266B; "15" = [char]0x263C;
@@ -518,11 +521,18 @@ function AltChar {
     "246" = [char]0x00F7; "247" = [char]0x2248; "248" = [char]0x00B0; "249" = [char]0x2219; "250" = [char]0x00B7;
     "251" = [char]0x221A; "252" = [char]0x207F; "253" = [char]0x00B2; "254" = [char]0x25A0; "255" = [char]0x00A0;
   }
-  if ($altCodeMapping.ContainsKey($inputCode)) {
-    $character = $altCodeMapping[$inputCode]
-    [System.Windows.Forms.SendKeys]::SendWait($character)
-  } else {
-    Write-Host "Alt Code not found for $inputCode"
+  if (!([string]::IsNullOrEmpty($inputCode))) {
+    if ($altCodeMapping.ContainsKey($inputCode)) {
+      $character = $altCodeMapping[$inputCode]
+      [System.Windows.Forms.SendKeys]::SendWait($character)
+    }
+  }
+  if (!([string]::IsNullOrEmpty($altString))) {
+    foreach ($char in $altString.ToCharArray()) {
+      $altCode = [int][char]$char
+      $character = $altCodeMapping["$altCode"]
+      [System.Windows.Forms.SendKeys]::SendWait($character)
+    }
   }
 }
 function CtrlShift
@@ -867,7 +877,16 @@ function runFlipper {
         $charArray = $char.Split(' ')
         $result = $charArray[0]
         $char = "$result"
-        AltChar "$char"
+        AltChar -inputCode "$char"
+      }
+    }
+    if ($line -match '^ALTSTRING (.*)') {
+      $char = $matches[1]
+      if ($char -ne '' -Or $char -ne ' ') { 
+        $charArray = $char.Split(' ')
+        $result = $charArray[0]
+        $char = "$result"
+        AltChar -AltString "$char"
       }
     }
   } 
@@ -1073,7 +1092,16 @@ function runFlipper {
             $charArray = $char.Split(' ')
             $result = $charArray[0]
             $char = "$result"
-            AltChar "$char"
+            AltChar -inputCode "$char"
+          }
+        }
+        if ($line -match '^ALTSTRING (.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            AltChar -AltString "$char"
           }
         }
       }
