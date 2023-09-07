@@ -341,6 +341,11 @@ function Insert
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Insert)
   [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::Insert)
 }
+function Applications
+{
+  [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Applications)
+  [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::Applications)
+}
 function Tab
 {
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Tab)
@@ -819,6 +824,9 @@ function runFlipper {
     if ($line -match '^INSERT(.*)') {
       Insert
     }
+    if ($line -match '^MENU(.*)' -Or $line -match '^APPS(.*)') {
+      Applications
+    }
     if ($line -match '^PAUSE(.*)' -Or $line -match '^BREAK(.*)') {
       kPause
     }
@@ -1033,6 +1041,9 @@ function runFlipper {
         }
         if ($line -match '^INSERT(.*)') {
           Insert
+        }
+        if ($line -match '^MENU(.*)' -Or $line -match '^APPS(.*)') {
+          Applications
         }
         if ($line -match '^PAUSE(.*)' -Or $line -match '^BREAK(.*)') {
           kPause
