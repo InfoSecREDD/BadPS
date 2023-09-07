@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.2.8
+# Version: 2.2.9
 # Target: Windows
-$version = "2.2.8"
+$version = "2.2.9"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -106,22 +106,58 @@ function VersionNewer($version, $onlineVersion) {
   }
   return $false
 }
-function ChangeLog {
-    param(
-        [string]$version
+function Changelog {
+    param (
+        [string]$startVersion,
+        [string]$endVersion
     )
-  $url = "https://github.com/$author/$projectName/releases/tag/v$version"
-  $response = Invoke-WebRequest -Uri $url
-  $html = $response.ParsedHtml
-  $divElement = $html.querySelector('div[data-pjax="true"][data-test-selector="body-content"][data-view-component="true"].markdown-body.my-3')
-  if ($divElement) {
-    $ulElement = $divElement.querySelector('ul')
-        if ($ulElement) {
+  $allChangelogs = @()
+  function Get-LiElements {
+        param (
+            [string]$version
+        )
+    $url = "https://github.com/InfoSecREDD/BadPS/releases/tag/v$version"
+    try {
+      $response = Invoke-WebRequest -Uri $url
+      $html = $response.ParsedHtml
+      if ($html) {
+        $divElement = $html.querySelector('div[data-pjax="true"][data-test-selector="body-content"][data-view-component="true"].markdown-body.my-3')
+        if ($divElement) {
+          $ulElement = $divElement.querySelector('ul')
+          if ($ulElement) {
             $liElements = $ulElement.getElementsByTagName('li') | Select-Object -ExpandProperty innerText
-            $changelogString = "  --> " + ($liElements -join "`n  --> ")
-            $global:changelogString = $changelogString
+            $changelogString = "      --> " + ($liElements -join "`n      --> ")
+            if ($changelogString -notlike "Error*") {
+              return "`nChangelog for version $version :`n$changelogString`n"
+            }
+          }
         }
+      }
+    }
+    catch {
+      return
+    }
   }
+  $userVersionParts = $startVersion.Split('.')
+  $currentVersionParts = $endVersion.Split('.')
+  $userMajor = [int]$userVersionParts[0]
+  $currentMajor = [int]$currentVersionParts[0]
+  $userMinor = [int]$userVersionParts[1]
+  $currentMinor = [int]$currentVersionParts[1]
+  $userPatch = [int]$userVersionParts[2]
+  $currentPatch = [int]$currentVersionParts[2]
+  for ($major = $currentMajor; $major -ge $userMajor; $major--) {
+    for ($minor = $currentMinor; $minor -ge $userMinor; $minor--) {
+      for ($patch = $currentPatch; $patch -ge $userPatch; $patch--) {
+        $version = "$major.$minor.$patch"
+        $changelog = Get-LiElements -version $version
+        if ($changelog) {
+          $allChangelogs += $changelog
+        }
+      }
+    }
+  }
+  $global:Changelogs = $allChangelogs
 }
 if ($args.Count -gt 0) {
   if ($args -eq '--help' -Or $args -eq '-help' -Or $args -eq 'help') {
@@ -158,9 +194,9 @@ if ($args.Count -gt 0) {
       }
     }
     if (VersionNewer $version $versionNumber) {
-      Changelog "$versionNumber"
+      Changelog "$version" "$versionNumber"
       Write-Host "`nNEWER VERSION DETECTED`!`n`nGithub Version: $versionNumber`n`n"
-      Write-Host " New Changes: `n$changelogString`n"
+      Write-Host " $global:Changelogs`n"
       Write-Host "Local Version: $version`n"
       $updateConfirm = ""
       $updateConfirm = Read-Host "Are you sure you want to update? (y`/N)" 
@@ -1210,9 +1246,9 @@ function runMenu {
         }
       }
       if (VersionNewer $version $versionNumber) {
-        Changelog "$versionNumber"
+        Changelog "$version" "$versionNumber"
         Write-Host "`n${BY}NEWER VERSION DETECTED`!`n`n${W}Github Version: $versionNumber`n`n"
-        Write-Host " New Changes: `n${GR}$changelogString`n"
+        Write-Host " ${Gy}$global:Changelogs`n"
         Write-Host "`n${W}Local Version: $version`n"
         $updateConfirm = ""
         $updateConfirm = Read-Host "Are you sure you want to update? (y`/N)" 
