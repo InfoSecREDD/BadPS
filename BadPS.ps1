@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.2.7
+# Version: 2.2.8
 # Target: Windows
-$version = "2.2.7"
+$version = "2.2.8"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -106,6 +106,23 @@ function VersionNewer($version, $onlineVersion) {
   }
   return $false
 }
+function ChangeLog {
+    param(
+        [string]$version
+    )
+  $url = "https://github.com/$author/$projectName/releases/tag/v$version"
+  $response = Invoke-WebRequest -Uri $url
+  $html = $response.ParsedHtml
+  $divElement = $html.querySelector('div[data-pjax="true"][data-test-selector="body-content"][data-view-component="true"].markdown-body.my-3')
+  if ($divElement) {
+    $ulElement = $divElement.querySelector('ul')
+        if ($ulElement) {
+            $liElements = $ulElement.getElementsByTagName('li') | Select-Object -ExpandProperty innerText
+            $changelogString = "  --> " + ($liElements -join "`n  --> ")
+            $global:changelogString = $changelogString
+        }
+  }
+}
 if ($args.Count -gt 0) {
   if ($args -eq '--help' -Or $args -eq '-help' -Or $args -eq 'help') {
     Write-Host "`n`nBadPS Examples:"
@@ -141,7 +158,10 @@ if ($args.Count -gt 0) {
       }
     }
     if (VersionNewer $version $versionNumber) {
-      Write-Host "`nNEWER VERSION DETECTED`!`n`nGithub Version: $versionNumber`nLocal Version: $version`n"
+      Changelog "$versionNumber"
+      Write-Host "`nNEWER VERSION DETECTED`!`n`nGithub Version: $versionNumber`n`n"
+      Write-Host " New Changes: `n$changelogString`n"
+      Write-Host "Local Version: $version`n"
       $updateConfirm = ""
       $updateConfirm = Read-Host "Are you sure you want to update? (y`/N)" 
       if ( $updateConfirm -eq "yes" -Or $updateConfirm -eq "y" -Or $updateConfirm -eq "Y" ) {
@@ -1190,7 +1210,10 @@ function runMenu {
         }
       }
       if (VersionNewer $version $versionNumber) {
-        Write-Host "`n${BY}NEWER VERSION DETECTED`!`n`n${W}Github Version: $versionNumber`nLocal Version: $version`n"
+        Changelog "$versionNumber"
+        Write-Host "`n${BY}NEWER VERSION DETECTED`!`n`n${W}Github Version: $versionNumber`n`n"
+        Write-Host " New Changes: `n${GR}$changelogString`n"
+        Write-Host "`n${W}Local Version: $version`n"
         $updateConfirm = ""
         $updateConfirm = Read-Host "Are you sure you want to update? (y`/N)" 
         if ( $updateConfirm -eq "yes" -Or $updateConfirm -eq "y" -Or $updateConfirm -eq "Y" ) {
