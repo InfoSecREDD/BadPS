@@ -78,7 +78,8 @@ $specialKeys = @{
     'PAUSE'    = [System.Windows.Forms.Keys]::Pause
 }
 $atos = "$pwd/setting.db"
-$core = "1"
+$options = "$pwd/osetting.db"
+$maxCore = "1"
 $hosted = "https://raw.githubusercontent.com"
 $author = "InfoSecREDD"
 $projectName = "BadPS"
@@ -106,6 +107,17 @@ function VersionNewer($version, $onlineVersion) {
   }
   return $false
 }
+function ChkCore {
+  if (Test-Path "$options") {
+    $global:core = Get-Content -Path $options
+  }
+  if (!(Test-Path "$options")) {
+      New-Item -Path $options -ItemType File >$null 2>&1
+      "0" | Set-Content -Path "$options"
+      $global:core = Get-Content -Path $options
+  }
+}
+
 function Changelog {
     param (
         [string]$startVersion,
@@ -231,6 +243,7 @@ if ($args.Count -gt 0) {
   } 
 }
 if ($args.Count -eq 0) {
+    ChkCore
     if (!(Test-Path "$atos")) {
       New-Item -Path $atos -ItemType File >$null 2>&1
       "0" | Set-Content -Path "$atos"
@@ -1182,8 +1195,192 @@ function runFlipper {
     }
   }
 }
+function runDucky1 {
+    param (
+        [string]$payload
+    )
+  $filePath = "$file"
+  if (Test-Path $filePath -PathType Leaf) {
+    Get-Content -Path $filePath | ForEach-Object {
+      $line = $_
+      if ($line -match '^DEFAULT_DELAY (\d+)') {
+        $global:delayDefault = [int]$matches[1]
+      }
+      if ($line -match '^DELAY (\d+)' -Or $line -match '^SLEEP (\d+)') {
+        $delayValue = [int]$matches[1]
+        Start-Sleep -Milliseconds $delayValue
+      }
+      if ($line -match '^F(.*)') {
+        $char = $matches[1]
+        SendKeys -SENDKEYS "{F${char}}"
+      }
+      if ($line -match '^ENTER(.*)') {
+        SendKeys -SENDKEYS '{ENTER}'
+      }
+      if ($line -match '^CTRL-SHIFT(.*)' -Or $line -match '^CTRL\+SHIFT(.*)') {
+        $char = $matches[1]
+        if ($char -ne '' -Or $char -ne ' ') { 
+          $charArray = $char.Split(' ')
+          $result = $charArray[0]
+          $char = "$result"
+          CtrlShift "$char"
+        } else {
+          CtrlShift
+        }
+      }
+      if ($line -match '^CTRL-ALT (.*)' -Or $line -match '^CTRL\+ALT (.*)' -Or $line -match '^CTRL ALT (.*)') {
+        $char = $matches[1]
+        if ($char -ne '' -Or $char -ne ' ') { 
+          $charArray = $char.Split(' ')
+          $result = $charArray[0]
+          $char = "$result"
+          CtrlAlt "$char"
+        } else {
+          CtrlAlt
+        } 
+      }
+      if ($line -match '^ALT-SHIFT (.*)' -Or $line -match '^ALT\+SHIFT (.*)') {
+        $char = $matches[1]
+        if ($char -ne '' -Or $char -ne ' ') { 
+          $charArray = $char.Split(' ')
+          $result = $charArray[0]
+          $char = "$result"
+          AltShift "$char"
+        } else {
+          AltShift
+        }
+      }
+      if ($line -match '^ALT-TAB (.*)' -Or $line -match '^ALT\+TAB (.*)' -Or $line -match '^ALT-TAB(.*)') {
+        $char = $matches[1]
+        if ($char -ne '' -Or $char -ne ' ') { 
+          $charArray = $char.Split(' ')
+          $result = $charArray[0]
+          $char = "$result"
+          AltTab "$char"
+        } else {
+          AltTab
+        }
+      }
+      if ($line -match '^SHIFT (.*)') {
+        $char = $matches[1]
+        if ($char -ne '' -Or $char -ne ' ') { 
+          $charArray = $char.Split(' ')
+          $result = $charArray[0]
+          $char = "$result"
+          Shift "$char"
+        } else {
+          Shift
+        }
+      }
+      if ($line -match '^ESC(.*)' -Or $line -match '^ESCAPE(.*)') {
+        Escape
+      }
+      if ($line -match '^SPACE(.*)' -Or $line -match '^SPACEBAR(.*)') {
+        Space
+      }
+      if ($line -match '^PRNTSCRN(.*)' -Or $line -match '^PRINTSCREEN(.*)') {
+        PrtScrn
+      }
+      if ($line -match '^PAGEUP(.*)' -Or $line -match '^PGUP(.*)') {
+        PageUp
+      }
+      if ($line -match '^PAGEDOWN(.*)' -Or $line -match '^PGD(.*)') {
+        PageDown
+      }
+      if ($line -match '^CAPSLOCK (.*)' -Or $line -match '^CAPS (.*)') {
+        Caps 
+      }
+      if ($line -match '^SCROLLLOCK (.*)' -Or $line -match '^SCROLL(.*)') {
+        ScrLk
+      }
+      if ($line -match '^CTRL (.*)' -Or $line -match '^CONTROL (.*)') {
+        $char = $matches[1]
+        if ($char -ne '' -Or $char -ne ' ') { 
+          $charArray = $char.Split(' ')
+          $result = $charArray[0]
+          $char = "$result"
+          Ctrl "$char"
+        } else {
+          Ctrl
+        }
+      }
+      if ($line -match '^ALT (.*)' -Or $line -match '^ALT-(.*)') {
+        $char = $matches[1]
+        if ($char -ne '' -Or $char -ne ' ') { 
+          $charArray = $char.Split(' ')
+          $result = $charArray[0]
+          $char = "$result"
+          Alt "$char"
+        } else {
+          Alt
+        }
+      }
+      if ($line -match '^INSERT(.*)') {
+        Insert
+      }
+      if ($line -match '^MENU(.*)' -Or $line -match '^APPS(.*)') {
+        Applications
+      }
+      if ($line -match '^PAUSE(.*)' -Or $line -match '^BREAK(.*)') {
+        kPause
+      }
+      if ($line -match '^BACKSPACE(.*)') {
+        Backspace
+      }
+      if ($line -match '^DOWNARROW(.*)' -Or $line -match '^DOWN(.*)') {
+        DownArrow
+      }
+      if ($line -match '^UPARROW(.*)' -Or $line -match '^UP(.*)') {
+        UpArrow
+      }
+      if ($line -match '^LEFTARROW(.*)' -Or $line -match '^LEFT(.*)') {
+        LeftArrow
+      }
+      if ($line -match '^RIGHTARROW(.*)' -Or $line -match '^RIGHT(.*)') {
+        RightArrow
+      }
+      if ($line -match 'GUI (.*)' -Or $line -match 'GUI-(.*)' -Or $line -match 'GUI\+(.*)' -Or $line -match 'WIN\+(.*)' -Or $line -match 'WIN-(.*)' -Or $line -match 'WIN (.*)') {
+        $char = $matches[1]
+        if ($char -ne '' -Or $char -ne ' ') { 
+          $charArray = $char.Split(' ')
+          $result = $charArray[0]
+          $char = "$result"
+          $capChar = $char.ToUpper()
+          Gui "$capChar"
+        } else {
+          Gui
+        }
+      }
+      if ($line -match 'GUI-SHIFT (.*)' -Or $line -match 'GUI+SHIFT (.*)') {
+        $char = $matches[1]
+        if ($char -ne '' -Or $char -ne ' ') { 
+          $charArray = $char.Split(' ')
+          $result = $charArray[0]
+          $char = "$result"
+          $capChar = $char.ToUpper()
+          GuiShift "$capChar"
+        } else {
+          GuiShift
+        }
+      }
+      if ($line -match '^STRING (.*)') {
+        $textAfterString = $matches[1]
+        foreach ($char in $textAfterString.ToCharArray()) {
+          if ( $char -eq " " ) {
+            SendKeys -SENDKEYS ' '
+          } else {
+            SendKeys -SENDKEYS "{$char}"
+          }
+        }
+      }
+    }
+  }
+  else
+  {
+    Write-Host "File not found: $filePath"
+  }
+}
 function runMenu {
-
   resize -height 800 -width 82 >$null 2>&1
   $Host.UI.RawUI.BackgroundColor = "Black"
   Clear-Host; Clear-Host
@@ -1195,13 +1392,20 @@ function runMenu {
     Sleep 5
     Clear-Host; Clear-Host
   }
-  if ( $core -eq "1" ) {
-    $coreDesc = 'Flipper Zero  '
-  }
-  if ( $core -eq "2" ) {
-    $coreDesc = 'DuckyScript v1'
-  }
   do {
+    ChkCore
+    if ( $global:core -eq "0" ) {
+      $coreDesc = 'DuckyScript v1'
+    }
+    if ( $global:core -eq "1" ) {
+      $coreDesc = 'Flipper Zero  '
+    }
+    if ( $global:core -eq "2" ) {
+      $coreDesc = 'DigiSpark USB '
+    }
+    if ( $global:core -eq "3" ) {
+      $coreDesc = 'PwnPi BadUSB  '
+    }
     Clear-Host
     $currentDirectory = Get-Location
     $txtFiles = Get-ChildItem -Path $currentDirectory -Filter *.txt
@@ -1229,6 +1433,8 @@ function runMenu {
     }
     Write-Host "`n`n ${BW}    0. ${BR}Exit"
     Write-Host "`n"
+    Write-Host "${C} -------------------------------------------------------------------------------"
+    Write-Host "     ${BC}Other Commands:${BW}  update${BR},${BW} cores"
     Write-Host "${C} -------------------------------------------------------------------------------`n"
     $userInput = Read-Host "  ${BW}Select ${BC}#${BW} and Press ENTER"
     if ($userInput -eq 'update' -or $userInput -eq 'u') {
@@ -1282,8 +1488,47 @@ function runMenu {
       Clear-Host
     }
     if ( $userInput -eq 'core' -Or $userInput -eq 'cores' ) {
-      Write-Host "`n`n${BR}This feature is still being implemented. Try again later.`n`n"
-      sleep 5
+      Clear-Host
+      $coreChoice = $true
+      while ($coreChoice) {
+      Clear-Host
+      Write-Host "`n`n`n`n`n`n                ${BW}O${W}----------------------------------------------------${BW}O"
+      Write-Host "                ${W}|                    ${BR}B${R}ad${BR}USB${W} Cores                    ${W}|"
+      Write-Host "                ${BW}O${W}----------------------------------------------------${BW}O"
+      Write-Host "                ${W}|                                                    |"
+      Write-Host "                ${W}|      ${BW}1. DuckyScript V1                             ${W}|"
+      Write-Host "                ${W}|      ${BW}2. Flipper Zero                               ${W}|"
+      Write-Host "                ${W}|                                                    |"
+      Write-Host "                ${W}|      ${BW}0. ${BR}Back to Main Menu                          ${W}|"
+      Write-Host "                ${W}|                                                    |"
+      Write-Host "                ${BW}O${W}----------------------------------------------------${BW}O`n"
+      $cMenu = Read-Host "                Select an option"
+      switch ($cMenu) {
+          "1" {
+              Write-Host "`n`n`n${W}Switching ${BR}B${R}ad${BR}USB${W} Core to DuckyScript V1."
+              $global:core = "0"
+              "0" | Set-Content -Path $options -Confirm:$false
+              Start-Sleep -Seconds 2
+              $coreChoice = $false
+          }
+          "2" {
+              Write-Host "`n`n`n${W}Switching ${BR}B${R}ad${BR}USB${W} Core to Flipper Zero."
+              $global:core = "1"
+              "1" | Set-Content -Path $options -Confirm:$false
+              Start-Sleep -Seconds 2
+              $coreChoice = $false
+          }
+          "0" {
+              Write-Host "`n`n`nReturning to Main Menu.."
+              $coreChoice = $false
+              Start-Sleep -Seconds 2
+          }
+          default {
+              Write-Host "`n`n`n${R}Invalid option. Please try again."
+              Start-Sleep -Seconds 2
+          }
+        }
+      }
     }
   } while (-not [int]::TryParse($userInput, [ref]$null))
     $selectedIndex = [int]$userInput - 1 
@@ -1300,12 +1545,15 @@ function runMenu {
     } elseif ($selectedIndex -ge 0 -and $selectedIndex -lt $txtFiles.Count) {
       $selectedFile = $txtFiles[$selectedIndex]
       $file = $($selectedFile.Name)
-      Write-Host "`n`nUser selected: ${BY}$($selectedFile.Name)`n"
+      Write-Host "`n`nUser selected: ${BY}$($selectedFile.Name)`nRunning with $coreDesc`n"
       $confirm = ""
       $confirm = Read-Host "You are about to run $($selectedFile.Name). Are you sure? (y`/N)" 
     if ( $confirm -eq "yes" -Or $confirm -eq "y" -Or $confirm -eq "Y" ) {
       Write-Host "`n   Running file now..."
-      if ( $core -eq "1" ) {
+      if ( $global:core -eq "0" ) {
+        runDucky1 -PAYLOAD "$file"
+      }
+      if ( $global:core -eq "1" ) {
         runFlipper -PAYLOAD "$file"
       }
       Write-Host "`n   Payload completed.`n`n"
@@ -1329,10 +1577,20 @@ while ($true) {
   if ( $args -ne '' -And $args -ne ' ' ) {
     $file = $args
     if (Test-Path "$atos") {
+      ChkCore
       $tos = Get-Content -Path $atos
       if ($tos -eq 1 ) {
-        Write-Host "Attempting to Execute payload.."
-        if ( $core -eq "1" ) {
+        if ( $global:core -eq "0" ) {
+          $exeName = "DuckyScript V1"
+        }
+        if ( $global:core -eq "1" ) {
+          $exeName = "Flipper Zero"
+        }
+        Write-Host "Attempting to Execute payload using ${exeName}.."
+        if ( $global:core -eq "0" ) {
+          runDucky1 "$file"
+        }
+        if ( $global:core -eq "1" ) {
           runFlipper "$file"
         }
         Write-Host "Completed."
@@ -1340,22 +1598,18 @@ while ($true) {
       }
       else
       {
-        Write-Host "Attempting to Execute payload in 10 seconds.."
+        Write-Host "Attempting to Execute payload (DuckyScript V1) in 10 seconds.."
         Sleep 10;
-        if ( $core -eq "1" ) {
-          runFlipper "$file"
-        }
+        runDucky1 "$file"
         Write-Host "Completed."
         exit 0
       }
     }
     else
     {
-      Write-Host "Attempting to Execute payload in 10 seconds.."
+      Write-Host "Attempting to Execute payload (DuckyScript V1) in 10 seconds.."
       Sleep 10;
-      if ( $core -eq "1" ) {
-        runFlipper "$file"
-      }
+      runDucky1 "$file"
       Write-Host "Completed."
       exit 0
     }
