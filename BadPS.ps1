@@ -493,7 +493,7 @@ function Alt
   }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
-  [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Menu)
+  [KeyboardSend.KeyboardSend]::KeyDown(0x12)
   if ( $key -ne '' -And $key -ne ' ' ) {
     if ($chkKey -in $specialKeys) {
       [KeyboardSend.KeyboardSend]::KeyDown($key)
@@ -504,7 +504,7 @@ function Alt
       [KeyboardSend.KeyboardSend]::KeyUp($key)
     }
   }
-  [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::Menu)
+  [KeyboardSend.KeyboardSend]::KeyUp(0x12)
 }
 function Ctrl
 {
@@ -535,6 +535,9 @@ function Shift
     param (
         $key
     )
+  if ( $key -eq 'UPARROW' -Or $key -eq 'DOWNARROW' -Or $key -eq 'LEFTARROW' -Or $key -eq 'RIGHTARROW' ) {
+    $key = $key -replace '.{5}$'
+  }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::ShiftKey)
@@ -627,7 +630,9 @@ function CtrlShift
 {
     param (
         $key
-    )
+    )  if ( $key -eq 'UPARROW' -Or $key -eq 'DOWNARROW' -Or $key -eq 'LEFTARROW' -Or $key -eq 'RIGHTARROW' ) {
+    $key = $key -replace '.{5}$'
+  }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::ControlKey)
@@ -650,10 +655,13 @@ function CtrlAlt
     param (
         $key
     )
+  if ( $key -eq 'UPARROW' -Or $key -eq 'DOWNARROW' -Or $key -eq 'LEFTARROW' -Or $key -eq 'RIGHTARROW' ) {
+    $key = $key -replace '.{5}$'
+  }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::ControlKey)
-  [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Menu)
+  [KeyboardSend.KeyboardSend]::KeyDown(0x12)
   if ( $key -ne '' -And $key -ne ' ' ) {
     if ($chkKey -in $specialKeys) {
       [KeyboardSend.KeyboardSend]::KeyDown($key)
@@ -664,7 +672,7 @@ function CtrlAlt
       [KeyboardSend.KeyboardSend]::KeyUp($key)
     }
   }
-  [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::Menu)
+  [KeyboardSend.KeyboardSend]::KeyUp(0x12)
   [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::ControlKey)
 }
 function AltShift
@@ -672,9 +680,12 @@ function AltShift
     param (
         $key
     )
+  if ( $key -eq 'UPARROW' -Or $key -eq 'DOWNARROW' -Or $key -eq 'LEFTARROW' -Or $key -eq 'RIGHTARROW' ) {
+    $key = $key -replace '.{5}$'
+  }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
-  [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Menu)
+  [KeyboardSend.KeyboardSend]::KeyDown(0x12)
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::ShiftKey)
   if ( $key -ne '' -And $key -ne ' ' ) {
     if ($chkKey -in $specialKeys) {
@@ -686,7 +697,7 @@ function AltShift
       [KeyboardSend.KeyboardSend]::KeyUp($key)
     }
   }
-  [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::Menu)
+  [KeyboardSend.KeyboardSend]::KeyUp(0x12)
   [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::ShiftKey)
 }
 function AltTab
@@ -694,9 +705,12 @@ function AltTab
     param (
         $key
     )
+  if ( $key -eq 'UPARROW' -Or $key -eq 'DOWNARROW' -Or $key -eq 'LEFTARROW' -Or $key -eq 'RIGHTARROW' ) {
+    $key = $key -replace '.{5}$'
+  }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
-  [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Menu)
+  [KeyboardSend.KeyboardSend]::KeyDown(0x12)
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Tab)
   if ( $key -ne '' -And $key -ne ' ' ) {
     if ($chkKey -in $specialKeys) {
@@ -708,7 +722,7 @@ function AltTab
       [KeyboardSend.KeyboardSend]::KeyUp($key)
     }
   }
-  [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::Menu)
+  [KeyboardSend.KeyboardSend]::KeyUp(0x12)
   [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::Tab)
 }
 function AltGui
@@ -716,9 +730,12 @@ function AltGui
     param (
         $key
     )
+  if ( $key -eq 'UPARROW' -Or $key -eq 'DOWNARROW' -Or $key -eq 'LEFTARROW' -Or $key -eq 'RIGHTARROW' ) {
+    $key = $key -replace '.{5}$'
+  }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
-  [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Menu)
+  [KeyboardSend.KeyboardSend]::KeyDown(0x12)
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::LWin)
   if ( $key -ne '' -And $key -ne ' ' ) {
     if ($chkKey -in $specialKeys) {
@@ -730,7 +747,7 @@ function AltGui
       [KeyboardSend.KeyboardSend]::KeyUp($key)
     }
   }
-  [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::Menu)
+  [KeyboardSend.KeyboardSend]::KeyUp(0x12)
   [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::LWin)
 }
 function GuiShift
@@ -738,6 +755,9 @@ function GuiShift
     param (
         $key
     )
+  if ( $key -eq 'UPARROW' -Or $key -eq 'DOWNARROW' -Or $key -eq 'LEFTARROW' -Or $key -eq 'RIGHTARROW' ) {
+    $key = $key -replace '.{5}$'
+  }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::LWin)
@@ -1728,4 +1748,3 @@ while ($true) {
     $ChkRun = "1"
   }
 }
-
