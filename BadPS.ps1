@@ -54,13 +54,9 @@ $specialKeys = @{
     'END'      = [System.Windows.Forms.Keys]::End
     'HOME'     = [System.Windows.Forms.Keys]::Home
     'LEFT'     = [System.Windows.Forms.Keys]::Left
-    'LEFTARROW' = [System.Windows.Forms.Keys]::Left
     'UP'       = [System.Windows.Forms.Keys]::Up
-    'UPARROW'  = [System.Windows.Forms.Keys]::Up
     'RIGHT'    = [System.Windows.Forms.Keys]::Right
-    'RIGHTARROW' = [System.Windows.Forms.Keys]::Right
     'DOWN'     = [System.Windows.Forms.Keys]::Down
-    'DOWNARROW' = [System.Windows.Forms.Keys]::Down
     'DELETE'   = [System.Windows.Forms.Keys]::Delete
     'INSERT'   = [System.Windows.Forms.Keys]::Insert
     'F1'       = [System.Windows.Forms.Keys]::F1
@@ -469,6 +465,9 @@ function Gui
     param (
         $key
     ) 
+  if ( $key -eq 'UPARROW' -Or $key -eq 'DOWNARROW' -Or $key -eq 'LEFTARROW' -Or $key -eq 'RIGHTARROW' ) {
+    $key = $key -replace '.{5}$'
+  }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::LWin)
@@ -489,6 +488,9 @@ function Alt
     param (
         $key
     )
+  if ( $key -eq 'UPARROW' -Or $key -eq 'DOWNARROW' -Or $key -eq 'LEFTARROW' -Or $key -eq 'RIGHTARROW' ) {
+    $key = $key -replace '.{5}$'
+  }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Menu)
@@ -509,6 +511,9 @@ function Ctrl
     param (
         $key
     )
+  if ( $key -eq 'UPARROW' -Or $key -eq 'DOWNARROW' -Or $key -eq 'LEFTARROW' -Or $key -eq 'RIGHTARROW' ) {
+    $key = $key -replace '.{5}$'
+  }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::ControlKey)
@@ -772,9 +777,264 @@ function runFlipper {
         [string]$command
     )
   $filePath = "$file"
-  $lastLine = $null  # Initialize the last line variable
-  $repeatCount = 1
-  if (!([string]::IsNullOrEmpty($command))) {
+  $lastLine = $null
+  $repeatCount = 0
+  if (!([string]::IsNullOrEmpty($payload))) {
+    if (Test-Path $filePath -PathType Leaf) {
+      Get-Content -Path $filePath | ForEach-Object {
+        $lineCheck = $_
+        if ( $lineCheck -notmatch '^REM(.*)') {
+          $line = $_
+        }
+        if ($line -match '^REPEAT (\d+)') {
+          $repeatCount = [int]$matches[1]
+        } else {
+          $lastLine = $line
+        }
+        if ($line -match '^STRING_DELAY (\d+)' -Or $line -match '^STRINGDELAY (\d+)') {
+          $global:delayString = [int]$matches[1]
+        }
+        if ($line -match '^DEFAULT_DELAY (\d+)' -Or $line -match '^DEFAULTDELAY (\d+)') {
+          $global:delayDefault = [int]$matches[1]
+        }
+        if ($line -match '^DELAY (\d+)' -Or $line -match '^SLEEP (\d+)') {
+          $delayValue = [int]$matches[1]
+          Start-Sleep -Milliseconds $delayValue
+        }
+        if ($line -match '^F(.*)') {
+          $char = $matches[1]
+          SendKeys -SENDKEYS "{F${char}}"
+        }
+        if ($line -match '^ENTER(.*)') {
+          SendKeys -SENDKEYS '{ENTER}'
+        }
+        if ($line -match '^CTRL-SHIFT(.*)' -Or $line -match '^CTRL\+SHIFT(.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            CtrlShift "$char"
+          } else {
+            CtrlShift
+          }
+        }
+        if ($line -match '^CTRL-ALT (.*)' -Or $line -match '^CTRL\+ALT (.*)' -Or $line -match '^CTRL ALT (.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            CtrlAlt "$char"
+          } else {
+            CtrlAlt
+          } 
+        }
+        if ($line -match '^ALT-SHIFT (.*)' -Or $line -match '^ALT\+SHIFT (.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            AltShift "$char"
+          } else {
+            AltShift
+          }
+        }
+        if ($line -match '^ALT-TAB (.*)' -Or $line -match '^ALT\+TAB (.*)' -Or $line -match '^ALT-TAB(.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            AltTab "$char"
+          } else {
+            AltTab
+          }
+        }
+        if ($line -match '^SHIFT (.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            Shift "$char"
+          } else {
+            Shift
+          }
+        }
+        if ($line -match '^TAB(.*)') {
+          Tab
+        }
+        if ($line -match '^ESC(.*)' -Or $line -match '^ESCAPE(.*)') {
+          Escape
+        }
+        if ($line -match '^SPACE(.*)' -Or $line -match '^SPACEBAR(.*)') {
+          $char = $matches[1]
+          if ( $char -eq ' ' ) {
+            Space
+          }
+          else {
+            Space
+          }
+        }
+        if ($line -match '^PRNTSCRN(.*)' -Or $line -match '^PRINTSCREEN(.*)') {
+          PrtScrn
+        }
+        if ($line -match '^PAGEUP(.*)' -Or $line -match '^PGUP(.*)') {
+          PageUp
+        }
+        if ($line -match '^PAGEDOWN(.*)' -Or $line -match '^PGD(.*)') {
+          PageDown
+        }
+        if ($line -match '^CAPSLOCK (.*)' -Or $line -match '^CAPS (.*)') {
+          Caps 
+        }
+        if ($line -match '^SCROLLLOCK (.*)' -Or $line -match '^SCROLL(.*)') {
+          ScrLk
+        }
+        if ($line -match '^CTRL (.*)' -Or $line -match '^CONTROL (.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            Ctrl "$char"
+          } else {
+            Ctrl
+          }
+        }
+        if ($line -match '^HOLD (.*)' -Or $line -match '^HLD (.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            hold "$char"
+          }
+        }
+        if ($line -match '^RELEASE (.*)' -Or $line -match '^REL (.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            release "$char"
+          }
+        }
+        if ($line -match '^ALT (.*)' -Or $line -match '^ALT-(.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            Alt "$char"
+          } else {
+            Alt
+          }
+        }
+        if ($line -match '^INSERT(.*)') {
+          Insert
+        }
+        if ($line -match '^MENU(.*)' -Or $line -match '^APPS(.*)') {
+          Applications
+        }
+        if ($line -match '^PAUSE(.*)' -Or $line -match '^BREAK(.*)') {
+          kPause
+        }
+        if ($line -match '^BACKSPACE(.*)') {
+          Backspace
+        }
+        if ($line -match '^DOWNARROW(.*)' -Or $line -match '^DOWN(.*)') {
+          DownArrow
+        }
+        if ($line -match '^UPARROW(.*)' -Or $line -match '^UP(.*)') {
+          UpArrow
+        }
+        if ($line -match '^LEFTARROW(.*)' -Or $line -match '^LEFT(.*)') {
+          LeftArrow
+        }
+        if ($line -match '^RIGHTARROW(.*)' -Or $line -match '^RIGHT(.*)') {
+          RightArrow
+        }
+        if ($line -match 'GUI (.*)' -Or $line -match 'GUI-(.*)' -Or $line -match 'GUI\+(.*)' -Or $line -match 'WIN\+(.*)' -Or $line -match 'WIN-(.*)' -Or $line -match 'WIN (.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            $capChar = $char.ToUpper()
+            Gui "$capChar"
+          } else {
+            Gui
+          }
+        }
+        if ($line -match 'GUI-SHIFT (.*)' -Or $line -match 'GUI+SHIFT (.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            $capChar = $char.ToUpper()
+            GuiShift "$capChar"
+          } else {
+            GuiShift
+          }
+        }
+        if ($line -match '^STRING (.*)') {
+          $textAfterString = $matches[1]
+          foreach ($char in $textAfterString.ToCharArray()) {
+            if ( $char -eq " " ) {
+              SendKeys -SENDKEYS ' '
+            } else {
+              SendKeys -SENDKEYS "{$char}"
+            }
+          }
+        }
+        if ($line -match '^ALTCHAR (.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            AltChar -inputCode "$char"
+          }
+        }
+        if ($line -match '^ALTSTRING (.*)') {
+          $char = $matches[1]
+          if ($char -ne '' -Or $char -ne ' ') { 
+            $charArray = $char.Split(' ')
+            $result = $charArray[0]
+            $char = "$result"
+            AltChar -AltString "$char"
+          }
+        }
+        if (!([string]::IsNullOrEmpty($global:delayDefault))) {
+          Start-Sleep -Milliseconds $global:delayDefault
+        }
+          else
+        {
+          Start-Sleep -Milliseconds 10
+        }
+        for ($i = 1; $i -le $repeatCount; $i++) {
+          runFlipper -command "$lastLine"
+          if (!([string]::IsNullOrEmpty($global:delayDefault))) {
+            Start-Sleep -Milliseconds $global:delayDefault
+          }
+          else
+          {
+            Start-Sleep -Milliseconds 10
+          }
+        }
+      $repeatCount = 0
+      }
+    }
+    elseif ((!([string]::IsNullOrEmpty($payload))) -Or (!(Test-Path "$payload")))
+    {
+      Write-Host "File not found: $filePath"
+    }
+  }
+  if (!([string]::IsNullOrEmpty($command)) ) {
     $line = $command
     if ($line -match '^F(.*)') {
       $char = $matches[1]
@@ -838,11 +1098,20 @@ function runFlipper {
         Shift
       }
     }
+    if ($line -match '^TAB(.*)') {
+      Tab
+    }
     if ($line -match '^ESC(.*)' -Or $line -match '^ESCAPE(.*)') {
       Escape
     }
     if ($line -match '^SPACE(.*)' -Or $line -match '^SPACEBAR(.*)') {
-      Space
+      $char = $matches[1]
+      if ( $char -eq ' ' ) {
+        Space
+      }
+      else {
+        Space
+      }
     }
     if ($line -match '^PRNTSCRN(.*)' -Or $line -match '^PRINTSCREEN(.*)') {
       PrtScrn
@@ -983,242 +1252,8 @@ function runFlipper {
       Start-Sleep -Milliseconds 10
     }
   } 
-  if (!([string]::IsNullOrEmpty($payload))) {
-    if (Test-Path $filePath -PathType Leaf) {
-      Get-Content -Path $filePath | ForEach-Object {
-        $line = $_
-        if ($line -match '^REPEAT (\d+)') {
-            $repeatCount = [int]$matches[1]
-              } else {
-           $lastLine = $line
-        }
-        if ($line -match '^STRING_DELAY (\d+)' -Or $line -match '^STRINGDELAY (\d+)') {
-          $global:delayString = [int]$matches[1]
-        }
-        if ($line -match '^DEFAULT_DELAY (\d+)' -Or $line -match '^DEFAULTDELAY (\d+)') {
-          $global:delayDefault = [int]$matches[1]
-        }
-        if ($line -match '^DELAY (\d+)' -Or $line -match '^SLEEP (\d+)') {
-          $delayValue = [int]$matches[1]
-          Start-Sleep -Milliseconds $delayValue
-        }
-        if ($line -match '^F(.*)') {
-          $char = $matches[1]
-          SendKeys -SENDKEYS "{F${char}}"
-        }
-        if ($line -match '^ENTER(.*)') {
-          SendKeys -SENDKEYS '{ENTER}'
-        }
-        if ($line -match '^CTRL-SHIFT(.*)' -Or $line -match '^CTRL\+SHIFT(.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            CtrlShift "$char"
-          } else {
-            CtrlShift
-          }
-        }
-        if ($line -match '^CTRL-ALT (.*)' -Or $line -match '^CTRL\+ALT (.*)' -Or $line -match '^CTRL ALT (.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            CtrlAlt "$char"
-          } else {
-            CtrlAlt
-          } 
-        }
-        if ($line -match '^ALT-SHIFT (.*)' -Or $line -match '^ALT\+SHIFT (.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            AltShift "$char"
-          } else {
-            AltShift
-          }
-        }
-        if ($line -match '^ALT-TAB (.*)' -Or $line -match '^ALT\+TAB (.*)' -Or $line -match '^ALT-TAB(.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            AltTab "$char"
-          } else {
-            AltTab
-          }
-        }
-        if ($line -match '^SHIFT (.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            Shift "$char"
-          } else {
-            Shift
-          }
-        }
-        if ($line -match '^ESC(.*)' -Or $line -match '^ESCAPE(.*)') {
-          Escape
-        }
-        if ($line -match '^SPACE(.*)' -Or $line -match '^SPACEBAR(.*)') {
-          Space
-        }
-        if ($line -match '^PRNTSCRN(.*)' -Or $line -match '^PRINTSCREEN(.*)') {
-          PrtScrn
-        }
-        if ($line -match '^PAGEUP(.*)' -Or $line -match '^PGUP(.*)') {
-          PageUp
-        }
-        if ($line -match '^PAGEDOWN(.*)' -Or $line -match '^PGD(.*)') {
-          PageDown
-        }
-        if ($line -match '^CAPSLOCK (.*)' -Or $line -match '^CAPS (.*)') {
-          Caps 
-        }
-        if ($line -match '^SCROLLLOCK (.*)' -Or $line -match '^SCROLL(.*)') {
-          ScrLk
-        }
-        if ($line -match '^CTRL (.*)' -Or $line -match '^CONTROL (.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            Ctrl "$char"
-          } else {
-            Ctrl
-          }
-        }
-        if ($line -match '^HOLD (.*)' -Or $line -match '^HLD (.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            hold "$char"
-          }
-        }
-        if ($line -match '^RELEASE (.*)' -Or $line -match '^REL (.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            release "$char"
-          }
-        }
-        if ($line -match '^ALT (.*)' -Or $line -match '^ALT-(.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            Alt "$char"
-          } else {
-            Alt
-          }
-        }
-        if ($line -match '^INSERT(.*)') {
-          Insert
-        }
-        if ($line -match '^MENU(.*)' -Or $line -match '^APPS(.*)') {
-          Applications
-        }
-        if ($line -match '^PAUSE(.*)' -Or $line -match '^BREAK(.*)') {
-          kPause
-        }
-        if ($line -match '^BACKSPACE(.*)') {
-          Backspace
-        }
-        if ($line -match '^DOWNARROW(.*)' -Or $line -match '^DOWN(.*)') {
-          DownArrow
-        }
-        if ($line -match '^UPARROW(.*)' -Or $line -match '^UP(.*)') {
-          UpArrow
-        }
-        if ($line -match '^LEFTARROW(.*)' -Or $line -match '^LEFT(.*)') {
-          LeftArrow
-        }
-        if ($line -match '^RIGHTARROW(.*)' -Or $line -match '^RIGHT(.*)') {
-          RightArrow
-        }
-        if ($line -match 'GUI (.*)' -Or $line -match 'GUI-(.*)' -Or $line -match 'GUI\+(.*)' -Or $line -match 'WIN\+(.*)' -Or $line -match 'WIN-(.*)' -Or $line -match 'WIN (.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            $capChar = $char.ToUpper()
-            Gui "$capChar"
-          } else {
-            Gui
-          }
-        }
-        if ($line -match 'GUI-SHIFT (.*)' -Or $line -match 'GUI+SHIFT (.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            $capChar = $char.ToUpper()
-            GuiShift "$capChar"
-          } else {
-            GuiShift
-          }
-        }
-        if ($line -match '^STRING (.*)') {
-          $textAfterString = $matches[1]
-          foreach ($char in $textAfterString.ToCharArray()) {
-            if ( $char -eq " " ) {
-              SendKeys -SENDKEYS ' '
-            } else {
-              SendKeys -SENDKEYS "{$char}"
-            }
-          }
-        }
-        if ($line -match '^ALTCHAR (.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            AltChar -inputCode "$char"
-          }
-        }
-        if ($line -match '^ALTSTRING (.*)') {
-          $char = $matches[1]
-          if ($char -ne '' -Or $char -ne ' ') { 
-            $charArray = $char.Split(' ')
-            $result = $charArray[0]
-            $char = "$result"
-            AltChar -AltString "$char"
-          }
-        }
-      }
-      if (!([string]::IsNullOrEmpty($global:delayDefault))) {
-        Start-Sleep -Milliseconds $global:delayDefault
-      }
-        else
-      {
-        Start-Sleep -Milliseconds 10
-      }
-      for ($i = 1; $i -le $repeatCount; $i++) {
-        runFlipper -COMMAND "$lastLine"
-      }
-    } 
-    else
-    {
-      Write-Host "File not found: $filePath"
-    }
-  }
 }
+
 function runDucky1 {
     param (
         [string]$payload
@@ -1226,7 +1261,10 @@ function runDucky1 {
   $filePath = "$file"
   if (Test-Path $filePath -PathType Leaf) {
     Get-Content -Path $filePath | ForEach-Object {
-      $line = $_
+      $lineCheck = $_
+      if ( $lineCheck -notmatch '^REM (\d+)') {
+        $line = $_
+      }
       if ($line -match '^STRING_DELAY (\d+)' -Or $line -match '^STRINGDELAY (\d+)') {
         $global:delayString = [int]$matches[1]
       }
@@ -1299,11 +1337,20 @@ function runDucky1 {
           Shift
         }
       }
+      if ($line -match '^TAB(.*)') {
+        Tab
+      }
       if ($line -match '^ESC(.*)' -Or $line -match '^ESCAPE(.*)') {
         Escape
       }
       if ($line -match '^SPACE(.*)' -Or $line -match '^SPACEBAR(.*)') {
-        Space
+        $char = $matches[1]
+        if ( $char -eq ' ' ) {
+          Space
+        }
+        else {
+          Space
+        }
       }
       if ($line -match '^PRNTSCRN(.*)' -Or $line -match '^PRINTSCREEN(.*)') {
         PrtScrn
@@ -1681,3 +1728,4 @@ while ($true) {
     $ChkRun = "1"
   }
 }
+
