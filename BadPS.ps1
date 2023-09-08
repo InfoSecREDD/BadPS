@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.3.1
+# Version: 2.3.2
 # Target: Windows
-$version = "2.3.1"
+$version = "2.3.2"
 $source = @"
 using System;
 using System.Collections.Generic;
