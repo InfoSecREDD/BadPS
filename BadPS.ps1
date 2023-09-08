@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.3
+# Version: 2.3.1
 # Target: Windows
-$version = "2.3"
+$version = "2.3.1"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -180,13 +180,14 @@ if ($args.Count -gt 0) {
     Write-Host ".`\$fileName                          - Launch BadPS in Dev Mode"
     Write-Host "`n"
     Write-Host "Supported DUCKYSCRIPT V1 Core Commands:"
-    Write-Host "DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, PRINTSCREEN, GUI, ALT, CTRL, SHIFT, ESCAPE, "
+    Write-Host "DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, STRING_DELAY, GUI, ALT, CTRL, SHIFT, ESCAPE, "
     Write-Host "CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI, CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING,"
-    Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, PAUSE`n"
+    Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, PAUSE, PRINTSCREEN`n"
     Write-Host "Supported Flipper BadUSB Core Commands:"
-    Write-Host "DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, PRINTSCREEN, GUI, ALT, CTRL, SHIFT, ESCAPE, "
+    Write-Host "DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, STRING_DELAY, GUI, ALT, CTRL, SHIFT, ESCAPE, "
     Write-Host "CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI, CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING,"
-    Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, RELEASE, HOLD, PAUSE, REPEAT, ALTCHAR, ALTSTRING`n"
+    Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, RELEASE, HOLD, PAUSE, REPEAT, ALTCHAR, ALTSTRING,"
+    Write-Host "PRINTSCREEN`n"
     Write-Host "Un-Supported BadUSB Commands:"
     Write-Host " CTRL-ALT DELETE (due to Windows Limits), Unknown`n`n`n"
     exit 0
@@ -752,8 +753,8 @@ function SendKeys {
   $wshell = New-Object -ComObject wscript.shell
   if ($SENDKEYS) {
     $wshell.SendKeys($SENDKEYS)
-    if (!([string]::IsNullOrEmpty($delayDefault))) {
-      Start-Sleep -Milliseconds $delayDefault
+    if (!([string]::IsNullOrEmpty($global:delayString))) {
+      Start-Sleep -Milliseconds $global:delayString
     }
     else
     {
@@ -970,6 +971,13 @@ function runFlipper {
         AltChar -AltString "$char"
       }
     }
+    if (!([string]::IsNullOrEmpty($global:delayDefault))) {
+      Start-Sleep -Milliseconds $global:delayDefault
+    }
+    else
+    {
+      Start-Sleep -Milliseconds 10
+    }
   } 
   if (!([string]::IsNullOrEmpty($payload))) {
     if (Test-Path $filePath -PathType Leaf) {
@@ -977,12 +985,13 @@ function runFlipper {
         $line = $_
         if ($line -match '^REPEAT (\d+)') {
             $repeatCount = [int]$matches[1]
-            $repeatCountFix = [int]$repeatCount + 1
-            $repeatCount = $repeatCountFix
               } else {
            $lastLine = $line
         }
-        if ($line -match '^DEFAULT_DELAY (\d+)') {
+        if ($line -match '^STRING_DELAY (\d+)' -Or $line -match '^STRINGDELAY (\d+)') {
+          $global:delayString = [int]$matches[1]
+        }
+        if ($line -match '^DEFAULT_DELAY (\d+)' -Or $line -match '^DEFAULTDELAY (\d+)') {
           $global:delayDefault = [int]$matches[1]
         }
         if ($line -match '^DELAY (\d+)' -Or $line -match '^SLEEP (\d+)') {
@@ -1189,6 +1198,13 @@ function runFlipper {
           }
         }
       }
+      if (!([string]::IsNullOrEmpty($global:delayDefault))) {
+        Start-Sleep -Milliseconds $global:delayDefault
+      }
+        else
+      {
+        Start-Sleep -Milliseconds 10
+      }
       for ($i = 1; $i -le $repeatCount; $i++) {
         runFlipper -COMMAND "$lastLine"
       }
@@ -1207,7 +1223,10 @@ function runDucky1 {
   if (Test-Path $filePath -PathType Leaf) {
     Get-Content -Path $filePath | ForEach-Object {
       $line = $_
-      if ($line -match '^DEFAULT_DELAY (\d+)') {
+      if ($line -match '^STRING_DELAY (\d+)' -Or $line -match '^STRINGDELAY (\d+)') {
+        $global:delayString = [int]$matches[1]
+      }
+      if ($line -match '^DEFAULT_DELAY (\d+)' -Or $line -match '^DEFAULTDELAY (\d+)') {
         $global:delayDefault = [int]$matches[1]
       }
       if ($line -match '^DELAY (\d+)' -Or $line -match '^SLEEP (\d+)') {
@@ -1377,6 +1396,13 @@ function runDucky1 {
           }
         }
       }
+      if (!([string]::IsNullOrEmpty($global:delayDefault))) {
+        Start-Sleep -Milliseconds $global:delayDefault
+      }
+        else
+      {
+        Start-Sleep -Milliseconds 10
+      }
     }
   }
   else
@@ -1435,13 +1461,11 @@ function runMenu {
     for ($i = 0; $i -lt $txtFiles.Count; $i++) {
       Write-Host " ${BW}    $($i + 1). ${W}$($txtFiles[$i].Name)"
     }
-    Write-Host "`n`n ${BW}    0. ${BR}Exit"
+    Write-Host "`n`n ${BW}    C. ${BC}Switch Cores`n ${BW}    U. ${BY}Update`n`n ${BW}    0. ${BR}Exit"
     Write-Host "`n"
-    Write-Host "${C} -------------------------------------------------------------------------------"
-    Write-Host "     ${BC}Other Commands:${BW}  update${BR},${BW} cores"
     Write-Host "${C} -------------------------------------------------------------------------------`n"
-    $userInput = Read-Host "  ${BW}Select ${BC}#${BW} and Press ENTER"
-    if ($userInput -eq 'update' -or $userInput -eq 'u') {
+    $userInput = Read-Host "  ${BW}Select a ${BY}INPUT${BW} and Press ENTER"
+    if ($userInput -eq 'update' -Or $userInput -eq 'u' -Or $userInput -eq 'U') {
       Write-Host "`n`nChecking GitHub for newer release..."
       $content = Invoke-RestMethod -Uri $UChk
       if ($content) {
@@ -1458,7 +1482,7 @@ function runMenu {
       if (VersionNewer $version $versionNumber) {
         Changelog "$version" "$versionNumber"
         Write-Host "`n${BY}NEWER VERSION DETECTED`!`n`n${W}Github Version: $versionNumber`n`n"
-        Write-Host " ${Gy}$global:Changelogs`n"
+        Write-Host " ${BW}$global:Changelogs`n"
         Write-Host "`n${W}Local Version: $version`n"
         $updateConfirm = ""
         $updateConfirm = Read-Host "Are you sure you want to update? (y`/N)" 
@@ -1475,14 +1499,14 @@ function runMenu {
             Remove-Item -Path "OLD-$fileName" -Force -Recurse  >$null 2>&1
           }
           Write-Host "`n${BR}  --`> Updating now`!`n`n"
-          sleep 3
+          Sleep 3
           Rename-Item -Path "$pwd\$fileName" -NewName "OLD-$fileName"
           Remove-Item -Path "$fileName" -Force -Recurse  >$null 2>&1
           Rename-Item -Path "$pwd\UPDATE-$fileName" -NewName "$fileName"
           Remove-Item -Path "OLD-$fileName" -Force -Recurse  >$null 2>&1
           Write-Host "`n${BG}  --`> Finished Updating from $version to $versionNumber`!`n`n${BC}  --`> Closing old Version and starting new Version.. Please wait.."
-          sleep 5
-          Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -File $pwd\$fileName"
+          Sleep 5
+          Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -NoExit -File $pwd\$fileName"
           Stop-Process -Id $BpPID -Force
         } 
       } else {
@@ -1491,7 +1515,37 @@ function runMenu {
       } 
       Clear-Host
     }
-    if ( $userInput -eq 'core' -Or $userInput -eq 'cores' ) {
+    if ( $userInput -eq 'rel' ) {
+          Write-Host "`n`n  ${BG} ---`> RELOADING PROJECT! Please Wait..`n`n"
+          sleep 5
+          Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -NoExit -File $pwd\$fileName"
+          Stop-Process -Id $BpPID -Force
+    }
+    if ( $userInput -eq 'corecommands' -Or $userInput -eq 'ccommands' -Or $userInput -eq 'commands' -Or $userInput -eq 'help' -Or $userInput -eq 'h' ) {
+      if ( $global:core -eq "0" ) {
+        Clear-Host
+        Write-Host "`n`n`n`n   ${W}Supported ${R}DUCKYSCRIPT V1${W} Core Commands:`n"
+        Write-Host "${C}   DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, STRING_DELAY, GUI,"
+        Write-Host "${C}   ALT, CTRL, SHIFT, ESCAPE, CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI,"
+        Write-Host "${C}   CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING, TAB, SCROLLLOCK,"
+        Write-Host "${C}   CAPSLOCK, INSERT, SPACE, PAUSE, PRINTSCREEN`n`n`n"
+        Write-Host "`n`n`n Press any key to continue...`n`n`n`n`n"
+        $null = Read-Host
+        Sleep 
+    }
+      if ( $global:core -eq "1" ) {
+        Clear-Host
+        Write-Host "`n`n`n`n   ${W}Supported ${R}Flipper Zero BadUSB${W} Core Commands:`n"
+        Write-Host "${C}   DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, STRING_DELAY, GUI,"
+        Write-Host "${C}   ALT, CTRL, SHIFT, ESCAPE, CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI,"
+        Write-Host "${C}   CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING, TAB, SCROLLLOCK,"
+        Write-Host "${C}   CAPSLOCK, INSERT, SPACE, RELEASE, HOLD, PAUSE, REPEAT, ALTCHAR,"
+        Write-Host "${C}   ALTSTRING, PRINTSCREEN`n`n`n"
+        Write-Host "`n`n`n Press any key to continue...`n`n`n`n`n"
+        $null = Read-Host
+      }
+    }
+    if ( $userInput -eq 'core' -Or $userInput -eq 'cores' -Or $userInput -eq 'c' -Or $userInput -eq 'C' ) {
       Clear-Host
       $coreChoice = $true
       while ($coreChoice) {
