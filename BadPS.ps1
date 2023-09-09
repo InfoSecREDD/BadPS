@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.3.3
+# Version: 2.3.4
 # Target: Windows
-$version = "2.3.3"
+$version = "2.3.4"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -44,6 +44,7 @@ Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
 $specialKeys = @{
     'BACK'     = [System.Windows.Forms.Keys]::Back
     'TAB'      = [System.Windows.Forms.Keys]::Tab
+    'ALT'      = [System.Windows.Forms.Keys]::LMenu
     'ENTER'    = [System.Windows.Forms.Keys]::Enter
     'ESCAPE'   = [System.Windows.Forms.Keys]::Escape
     'SPACE'    = [System.Windows.Forms.Keys]::Space
@@ -493,7 +494,7 @@ function Alt
   }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
-  [KeyboardSend.KeyboardSend]::KeyDown(0x12)
+  [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::LMenu)
   if ( $key -ne '' -And $key -ne ' ' ) {
     if ($chkKey -in $specialKeys) {
       [KeyboardSend.KeyboardSend]::KeyDown($key)
@@ -504,7 +505,7 @@ function Alt
       [KeyboardSend.KeyboardSend]::KeyUp($key)
     }
   }
-  [KeyboardSend.KeyboardSend]::KeyUp(0x12)
+  [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::LMenu)
 }
 function Ctrl
 {
@@ -661,7 +662,7 @@ function CtrlAlt
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::ControlKey)
-  [KeyboardSend.KeyboardSend]::KeyDown(0x12)
+  [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::LMenu)
   if ( $key -ne '' -And $key -ne ' ' ) {
     if ($chkKey -in $specialKeys) {
       [KeyboardSend.KeyboardSend]::KeyDown($key)
@@ -672,7 +673,7 @@ function CtrlAlt
       [KeyboardSend.KeyboardSend]::KeyUp($key)
     }
   }
-  [KeyboardSend.KeyboardSend]::KeyUp(0x12)
+  [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::LMenu)
   [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::ControlKey)
 }
 function AltShift
@@ -685,7 +686,7 @@ function AltShift
   }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
-  [KeyboardSend.KeyboardSend]::KeyDown(0x12)
+  [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::LMenu)
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::ShiftKey)
   if ( $key -ne '' -And $key -ne ' ' ) {
     if ($chkKey -in $specialKeys) {
@@ -697,7 +698,7 @@ function AltShift
       [KeyboardSend.KeyboardSend]::KeyUp($key)
     }
   }
-  [KeyboardSend.KeyboardSend]::KeyUp(0x12)
+  [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::LMenu)
   [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::ShiftKey)
 }
 function AltTab
@@ -710,7 +711,7 @@ function AltTab
   }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
-  [KeyboardSend.KeyboardSend]::KeyDown(0x12)
+  [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::LMenu)
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::Tab)
   if ( $key -ne '' -And $key -ne ' ' ) {
     if ($chkKey -in $specialKeys) {
@@ -722,7 +723,7 @@ function AltTab
       [KeyboardSend.KeyboardSend]::KeyUp($key)
     }
   }
-  [KeyboardSend.KeyboardSend]::KeyUp(0x12)
+  [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::LMenu)
   [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::Tab)
 }
 function AltGui
@@ -735,7 +736,7 @@ function AltGui
   }
   $key = (Get-Culture).TextInfo.ToTitleCase($key.ToLower())
   $chkKey = $specialKeys[$key]
-  [KeyboardSend.KeyboardSend]::KeyDown(0x12)
+  [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::LMenu)
   [KeyboardSend.KeyboardSend]::KeyDown([System.Windows.Forms.Keys]::LWin)
   if ( $key -ne '' -And $key -ne ' ' ) {
     if ($chkKey -in $specialKeys) {
@@ -747,7 +748,7 @@ function AltGui
       [KeyboardSend.KeyboardSend]::KeyUp($key)
     }
   }
-  [KeyboardSend.KeyboardSend]::KeyUp(0x12)
+  [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::LMenu)
   [KeyboardSend.KeyboardSend]::KeyUp([System.Windows.Forms.Keys]::LWin)
 }
 function GuiShift
@@ -801,7 +802,7 @@ function runFlipper {
   $repeatCount = 0
   if (!([string]::IsNullOrEmpty($payload))) {
     if (Test-Path $filePath -PathType Leaf) {
-      Get-Content -Path $filePath | ForEach-Object {
+      Get-Content -Path $filePath | Where-Object { $_ -notlike 'REM*' } | ForEach-Object {
         $lineCheck = $_
         if ( $lineCheck -notmatch '^REM(.*)') {
           $line = $_
@@ -1280,9 +1281,9 @@ function runDucky1 {
     )
   $filePath = "$file"
   if (Test-Path $filePath -PathType Leaf) {
-    Get-Content -Path $filePath | ForEach-Object {
+    Get-Content -Path $filePath | Where-Object { $_ -notlike 'REM*' } | ForEach-Object {
       $lineCheck = $_
-      if ( $lineCheck -notmatch '^REM (\d+)') {
+      if ( $lineCheck -notmatch '^REM(.*)') {
         $line = $_
       }
       if ($line -match '^STRING_DELAY (\d+)' -Or $line -match '^STRINGDELAY (\d+)') {
