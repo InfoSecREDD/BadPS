@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.3.6
+# Version: 2.3.7
 # Target: Windows
-$version = "2.3.6"
+$version = "2.3.7"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -813,6 +813,13 @@ function runFlipper {
         } else {
           $lastLine = $line
         }
+        if ($line -match '^WAIT_FOR_BUTTON_PRESS(.*)') {
+          Write-Host "`n`n${BW}[${R}Paused${BW}] ${BY}WAITING FOR BUTTON PRESS${BW}... Press ${BR}ENTER${BW} to continue...`n`n"
+          $null = Read-Host
+          Write-Host "   ${C}Performing a ${BW}ALT-TAB${C} to refocus last Window and resuming in 5 seconds...`n      ${BR}DO NOT TOUCH OR TYPE ANYTING! PAYLOAD IS STILL RUNNING!!!"
+          Sleep 5
+          [System.Windows.Forms.SendKeys]::SendWait('%{TAB}')
+        }
         if ($line -match '^STRING_DELAY (\d+)' -Or $line -match '^STRINGDELAY (\d+)') {
           $global:delayString = [int]$matches[1]
         }
@@ -1067,6 +1074,13 @@ function runFlipper {
     }
     if ($line -match '^ENTER(.*)') {
       SendKeys -SENDKEYS '{ENTER}'
+    }
+    if ($line -match '^WAIT_FOR_BUTTON_PRESS(.*)') {
+      Write-Host "`n`n[Paused] WAITING FOR BUTTON PRESS... Press any key to continue...`n`n"
+      $null = Read-Host
+      Write-Host "   ${C}Performing a ${BW}ALT-TAB${C} to refocus last Window and resuming in 5 seconds...`n      ${BR}DO NOT TOUCH OR TYPE ANYTING! PAYLOAD IS STILL RUNNING!!!"
+      Sleep 5
+      [System.Windows.Forms.SendKeys]::SendWait('%{TAB}')
     }
     if ($line -match '^CTRL-SHIFT(.*)' -Or $line -match '^CTRL\+SHIFT(.*)') {
       $char = $matches[1]
@@ -1644,7 +1658,6 @@ function runMenu {
         Write-Host "${C}   CAPSLOCK, INSERT, SPACE, PAUSE, PRINTSCREEN`n`n`n"
         Write-Host "`n`n`n Press any key to continue...`n`n`n`n`n"
         $null = Read-Host
-        Sleep 
     }
       if ( $global:core -eq "1" ) {
         Clear-Host
@@ -1716,9 +1729,9 @@ function runMenu {
     } elseif ($selectedIndex -ge 0 -and $selectedIndex -lt $txtFiles.Count) {
       $selectedFile = $txtFiles[$selectedIndex]
       $file = $($selectedFile.Name)
-      Write-Host "`n`nUser selected: ${BY}$($selectedFile.Name)`nRunning payload using $coreDesc Core.`n"
+      Write-Host "`n`n${W}User selected: ${BY}$($selectedFile.Name)`n${W}Running payload using ${R}BadUSB${W} Core: ${BY}$coreDesc`n"
       $confirm = ""
-      $confirm = Read-Host "You are about to run $($selectedFile.Name). Are you sure? (y`/N)" 
+      $confirm = Read-Host "${W}You are about to run ${BR}$($selectedFile.Name)${W}. Are you sure? (y`/N)" 
     if ( $confirm -eq "yes" -Or $confirm -eq "y" -Or $confirm -eq "Y" ) {
       if ([string]::IsNullOrEmpty($global:payloadDelay)) {
         $j = 0
@@ -1743,7 +1756,7 @@ function runMenu {
       Write-Host "`n   ${C}Returning to Main Menu in 10 seconds...`n`n"
       Sleep 10
     } else {
-      Write-Host "`n   Returning to Menu."
+      Write-Host "`n   ${W}Returning to ${R}Main Menu${W}."
       Sleep 4
     }
   } else {
@@ -1802,4 +1815,3 @@ while ($true) {
     $ChkRun = "1"
   }
 }
-
