@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.3.4
+# Version: 2.3.5
 # Target: Windows
-$version = "2.3.4"
+$version = "2.3.5"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -1011,6 +1011,9 @@ function runFlipper {
               SendKeys -SENDKEYS "{$char}"
             }
           }
+          if (!([string]::IsNullOrEmpty($global:delayString))) {
+            $global:delayString = $null
+          }
         }
         if ($line -match '^ALTCHAR (.*)') {
           $char = $matches[1]
@@ -1286,9 +1289,6 @@ function runDucky1 {
       if ( $lineCheck -notmatch '^REM(.*)') {
         $line = $_
       }
-      if ($line -match '^STRING_DELAY (\d+)' -Or $line -match '^STRINGDELAY (\d+)') {
-        $global:delayString = [int]$matches[1]
-      }
       if ($line -match '^DEFAULT_DELAY (\d+)' -Or $line -match '^DEFAULTDELAY (\d+)') {
         $global:delayDefault = [int]$matches[1]
       }
@@ -1467,6 +1467,18 @@ function runDucky1 {
             SendKeys -SENDKEYS "{$char}"
           }
         }
+      }
+      if ($line -match '^STRING_DELAY (\d+)\s+(.+)' -Or $line -match '^STRINGDELAY (\d+)\s+(.+)') {
+        $global:delayString = [int]$matches[1]
+        $global:delayText = $matches[2]
+        foreach ($char in $global:delayText.ToCharArray()) {
+          if ( $char -eq " " ) {
+            SendKeys -SENDKEYS ' '
+          } else {
+            SendKeys -SENDKEYS "{$char}"
+          }
+        }
+        $global:delayString = $null
       }
       if (!([string]::IsNullOrEmpty($global:delayDefault))) {
         Start-Sleep -Milliseconds $global:delayDefault
