@@ -189,7 +189,7 @@ if ($args.Count -gt 0) {
     Write-Host "DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, STRING_DELAY, GUI, ALT, CTRL, SHIFT, ESCAPE, "
     Write-Host "CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI, CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING,"
     Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, RELEASE, HOLD, PAUSE, REPEAT, ALTCHAR, ALTSTRING,"
-    Write-Host "PRINTSCREEN`n"
+    Write-Host "PRINTSCREEN, WAIT_FOR_BUTTON_PRESS`n"
     Write-Host "Un-Supported BadUSB Commands:"
     Write-Host " CTRL-ALT DELETE (due to Windows Limits), Unknown`n`n`n"
     exit 0
@@ -1666,7 +1666,7 @@ function runMenu {
         Write-Host "${C}   ALT, CTRL, SHIFT, ESCAPE, CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI,"
         Write-Host "${C}   CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING, TAB, SCROLLLOCK,"
         Write-Host "${C}   CAPSLOCK, INSERT, SPACE, RELEASE, HOLD, PAUSE, REPEAT, ALTCHAR,"
-        Write-Host "${C}   ALTSTRING, PRINTSCREEN`n`n`n"
+        Write-Host "${C}   ALTSTRING, PRINTSCREEN, WAIT_FOR_BUTTON_PRESS`n`n`n"
         Write-Host "`n`n`n Press any key to continue...`n`n`n`n`n"
         $null = Read-Host
       }
@@ -1815,3 +1815,4 @@ while ($true) {
     $ChkRun = "1"
   }
 }
+
