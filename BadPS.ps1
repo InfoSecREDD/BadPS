@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.3.5
+# Version: 2.3.6
 # Target: Windows
-$version = "2.3.5"
+$version = "2.3.6"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -78,8 +78,9 @@ $specialKeys = @{
     'PRINT'    = [System.Windows.Forms.Keys]::PrintScreen
     'PAUSE'    = [System.Windows.Forms.Keys]::Pause
 }
-$atos = "$pwd/setting.db"
-$options = "$pwd/osetting.db"
+$atos = "$pwd\setting.db"
+$options = "$pwd\osetting.db"
+$delayfile = "$pwd\delay.db"
 $maxCore = "1"
 $hosted = "https://raw.githubusercontent.com"
 $author = "InfoSecREDD"
@@ -1495,7 +1496,7 @@ function runDucky1 {
   }
 }
 function runMenu {
-  resize -height 800 -width 82 >$null 2>&1
+  resize -height 810 -width 82 >$null 2>&1
   $Host.UI.RawUI.BackgroundColor = "Black"
   Clear-Host; Clear-Host
   $R = [char]27 + '[31m';$G = [char]27 + '[32m';$Y = [char]27 + '[33m';$B = [char]27 + '[34m';$M = [char]27 + '[35m';$C = [char]27 + '[36m';$W = [char]27 + '[37m';$Gy = [char]27 + '[90m';$BR = [char]27 + '[91m';$BG = [char]27 + '[92m';$BY = [char]27 + '[93m';$BB = [char]27 + '[94m';$BM = [char]27 + '[95m';$BC = [char]27 + '[96m';$BW = [char]27 + '[97m';$RST = [char]27 + '[0m'
@@ -1519,6 +1520,9 @@ function runMenu {
     }
     if ( $global:core -eq "3" ) {
       $coreDesc = 'PwnPi BadUSB  '
+    }
+    if ( Test-Path "$delayfile" ) {
+      $global:payloadDelay = Get-Content -Path "$delayfile"
     }
     Clear-Host
     $currentDirectory = Get-Location
@@ -1545,7 +1549,7 @@ function runMenu {
     for ($i = 0; $i -lt $txtFiles.Count; $i++) {
       Write-Host " ${BW}    $($i + 1). ${W}$($txtFiles[$i].Name)"
     }
-    Write-Host "`n`n ${BW}    C. ${BC}Switch Cores`n ${BW}    U. ${BY}Update`n`n ${BW}    0. ${BR}Exit"
+    Write-Host "`n`n ${BW}    D. ${W}Payload Delay`n ${BW}    C. ${BC}Switch Cores`n ${BW}    U. ${BY}Update`n`n ${BW}    0. ${BR}Exit"
     Write-Host "`n"
     Write-Host "${C} -------------------------------------------------------------------------------`n"
     $userInput = Read-Host "  ${BW}Select a ${BY}INPUT${BW} and Press ENTER"
@@ -1598,6 +1602,31 @@ function runMenu {
         Sleep 5
       } 
       Clear-Host
+    }
+    if ( $userInput -eq 'D' ) {
+      if ( Test-Path "$delayfile" ) {
+        $global:payloadDelay = Get-Content -Path "$delayfile"
+      }
+      else {
+        "0" | Add-Content -Path "$delayfile"
+        $global:payloadDelay = Get-Content -Path "$delayfile"
+      }
+      Clear-Host
+      Write-Host "`n`n`n`n`n`n`n`n    ${BY}O${BW}============================================================${BY}O"
+      Write-Host "${BW}    `|                 ${BB}Payload Execution Delay${BW}                    `|"
+      Write-Host "    ${BY}O${BW}============================================================${BY}O"
+      Write-Host "`n`n         Current Delay: ${BR}$global:payloadDelay`n`n"
+      $confirmDelay = Read-Host "${W}      Do you want to change it? (N/y)"
+      if ( $confirmDelay -eq 'y' ) {
+        do {
+          $getDelay = Read-Host "`n`n      ${W}How many ${BR}seconds${W} do you want before Payload Execution?"
+        } until ($getDelay -match '^\d+$')
+        Write-Host "`n`n     Setting Payload Delay to ${BR}$getDelay`n`n"
+        "$getDelay" | Out-File -FilePath "$delayfile" -Force
+        $global:payloadDelay = $getDelay
+      }
+      Write-Host "`n`n${W}    Returning to ${R}Main Menu${W}..`n`n`n`n"
+      sleep 5
     }
     if ( $userInput -eq 'rel' ) {
           Write-Host "`n`n  ${BG} ---`> RELOADING PROJECT! Please Wait..`n`n"
@@ -1687,11 +1716,23 @@ function runMenu {
     } elseif ($selectedIndex -ge 0 -and $selectedIndex -lt $txtFiles.Count) {
       $selectedFile = $txtFiles[$selectedIndex]
       $file = $($selectedFile.Name)
-      Write-Host "`n`nUser selected: ${BY}$($selectedFile.Name)`nRunning with $coreDesc`n"
+      Write-Host "`n`nUser selected: ${BY}$($selectedFile.Name)`nRunning payload using $coreDesc Core.`n"
       $confirm = ""
       $confirm = Read-Host "You are about to run $($selectedFile.Name). Are you sure? (y`/N)" 
     if ( $confirm -eq "yes" -Or $confirm -eq "y" -Or $confirm -eq "Y" ) {
-      Write-Host "`n   Running file now..."
+      if ([string]::IsNullOrEmpty($global:payloadDelay)) {
+        $j = 0
+      }
+      else {
+        $j = [int]$global:payloadDelay
+      }
+      for ($i = $j; $i -ge 1; $i--) {
+        Write-Host -NoNewline "${W}Running file in ${BY}$i${W}..."
+        Start-Sleep -Seconds 1
+        [Console]::SetCursorPosition(0, [Console]::CursorTop)
+        [Console]::CursorLeft = 0
+      }
+      Write-Host "${W}Running File ${BG}NOW${W}!"
       if ( $global:core -eq "0" ) {
         runDucky1 -PAYLOAD "$file"
       }
@@ -1761,3 +1802,4 @@ while ($true) {
     $ChkRun = "1"
   }
 }
+
