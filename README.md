@@ -96,8 +96,8 @@ Just type ``` update ``` in Dev Mode.
 Want to help improve the project? Pull Requests Welcome!
 
 ## Issues?
-Missing a Command? Found a bug? Let us know!
-Submit them to the [Issues](https://github.com/InfoSecREDD/BadPS/issues) section of this Repo.
+> [!IMPORTANT]
+> Missing a Command? Found a bug? Let us know! Submit them to the [Issues](https://github.com/InfoSecREDD/BadPS/issues) section of this Repo.
 
 
 
