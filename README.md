@@ -40,7 +40,7 @@ _**A.** Not yet, but in the process of being completed. This repo is supposed to
 
 | Core# | Versions                        | 
 |------:|---------------------------------|
-|      0| DuckyScriptV1                   |
+|      0| DuckyScript v1                  |
 |      1| Flipper Zero BadUSB             | 
 
 **Future Cores**
