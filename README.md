@@ -34,6 +34,12 @@ _**A.** Yes. This is meant to help the community develop/test/experience what Ba
 
 _**A.** Not yet, but in the process of being completed. This repo is supposed to be as accurate as possible, and will only be posted on here once we can verify with documentation or via Developers._
 
+
+
+**Q. So BadPS simulates a real BadUSB device?**
+_**A.** Yes. There's a few limitations such as - Not being able to do CTRL ALT DEL. Other known issue is if Windows User Security Prompt or any screen similar. Test and find out!_
+
+
 ##
 
 **Supported Cores**
