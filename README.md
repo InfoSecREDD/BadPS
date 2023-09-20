@@ -25,7 +25,7 @@ _**A.** Currently, this project only supports Windows 10 and Windows 11. - Hence
 
 **Q. So if I have a supported PC, I can just develop Payloads for free?**
 
-_**A.** Yes. This is meant to help the community develop/test/experience what BadUSB/DuckyScript[^1] is all about. Purely educational and for development._
+_**A.** Yes. This is meant to help the community develop/test/experience what BadUSB/DuckyScript is all about. Purely educational and for development._
 
 
 
@@ -43,7 +43,7 @@ _**A.** Yes. There's a few limitations such as - Not being able to do CTRL ALT D
 
 ##
 
-**Supported Cores**[^1]
+**Supported Cores**
 
 | Core# | Versions                        | 
 |------:|---------------------------------|
@@ -59,14 +59,14 @@ _**A.** Yes. There's a few limitations such as - Not being able to do CTRL ALT D
 
 
 > [!NOTE]
-> DuckyScript™ is the programming language of the USB Rubber Ducky™, Hak5® hotplug attack gear and officially licensed devices. (Trademark Hak5 LLC. Copyright © 2010 Hak5 LLC. All rights reserved.) DuckyScript™ v1 has the same commands as BadUSB does so we are "allowed" to support any command that other OpenSource projects such as the Flipper Zero and other devices.[^1]
+> DuckyScript™ v1 has the same commands as BadUSB does so we are "allowed" to support any command that other OpenSource projects such as the Flipper Zero and other devices.[^1]
 
 ##
 
 ## Installation
-- Download the [latest release](https://github.com/InfoSecREDD/BadPS/releases) of this Repo.
+- Download the [Latest Release](https://github.com/InfoSecREDD/BadPS/releases) of this Repo.
 - Unzip the files into the folder of choice.
-- Place desired BadUSB/DuckyScript[^1] payload(s) in the same folder as BadPS. 
+- Place desired BadUSB/DuckyScript payload(s) in the same folder as BadPS. 
 - Use the syntaxes below for script you want to execute or to enter Dev Mode.
 - Enjoy!
 
@@ -114,6 +114,8 @@ Want to help improve the project? Pull Requests Welcome!
 > [!IMPORTANT]
 > Missing a Command? Found a bug? Let us know! Submit them to the [Issues](https://github.com/InfoSecREDD/BadPS/issues) section of this Repo.
 
- [^1]: DuckyScript™ is Trademarked and Copyrighted. Anything DuckyScript™ v2 and above, We can not support it at this current time. Please do not ask.
+##
+
+ [^1]: "DuckyScript™ is the programming language of the USB Rubber Ducky™, Hak5® hotplug attack gear and officially licensed devices. (Trademark Hak5 LLC. Copyright © 2010 Hak5 LLC. All rights reserved.)" -- Anything DuckyScript™ v2 and above, We can not support it at this time. Please do not ask.
  [^2]: If we are unsure of a command or feature, we will contact the Developer first before posting information and misleading the community.
 
