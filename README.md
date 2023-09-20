@@ -5,7 +5,7 @@
 ![Static Badge](https://img.shields.io/badge/Built_with-PowerShell-orange) ![Static Badge](https://img.shields.io/badge/Windows_10-Supported-lime) ![Static Badge](https://img.shields.io/badge/Windows_11-Supported-lime)
 ##
 
-This tool was created to give people the ability to develop BadUSB payloads without plugging in a device, loading the device, loading the dev payload, then executing on device. This allows "some" DuckyScript[^1]/BadUSB scripts to be simulated as if a real Device was running the attack. More features will be added later. This project is meant for development and education purposes only. 
+This tool was created to give people the ability to develop BadUSB payloads without plugging in a device, loading the device, loading the dev payload, then executing on device. This allows "some" DuckyScript™[^1]/BadUSB scripts to be simulated as if a real Device was running the attack. More features will be added later. This project is meant for development and education purposes only. 
 
 
 ## FAQ
@@ -25,7 +25,7 @@ _**A.** Currently, this project only supports Windows 10 and Windows 11. - Hence
 
 **Q. So if I have a supported PC, I can just develop Payloads for free?**
 
-_**A.** Yes. This is meant to help the community develop/test/experience what BadUSB/DuckyScript is all about. Purely educational and for development._
+_**A.** Yes. This is meant to help the community develop/test/experience what BadUSB/DuckyScript™ is all about. Purely educational and for development._
 
 
 
@@ -59,21 +59,21 @@ _**A.** Yes. There's a few limitations such as - Not being able to do CTRL ALT D
 
 
 > [!NOTE]
-> DuckyScript™ v1 has the same commands as BadUSB does so we are "allowed" to support any command that other OpenSource projects such as the Flipper Zero and other devices.[^1]
+> DuckyScript™ v1 has the same commands as BadUSB does so we are "allowed" to support any command that other OpenSource projects such as the Flipper Zero and other devices. - Also to preserve the history of DuckyScript™ and BadUSB alike.[^1]
 
 ##
 
 ## Installation
 - Download the [Latest Release](https://github.com/InfoSecREDD/BadPS/releases) of this Repo.
 - Unzip the files into the folder of choice.
-- Place desired BadUSB/DuckyScript payload(s) in the same folder as BadPS. 
+- Place desired BadUSB/DuckyScript™ payload(s) in the same folder as BadPS. 
 - Use the syntaxes below for script you want to execute or to enter Dev Mode.
 - Enjoy!
 
 ##
 
 
-```PowerShell> > .\BadPS.ps1 --help
+```PowerShell> PS> .\BadPS.ps1 --help
 
 
 BadPS Examples:
@@ -102,7 +102,7 @@ Un-Supported BadUSB Commands:
 
 ## Updating the Project
 We have made it about as easy as possible.
-```PS> .\BadPS.ps1 --update```
+```PowerShell> PS> .\BadPS.ps1 --update```
 OR
 Just type ``` update ``` in Dev Mode.
 
@@ -116,6 +116,6 @@ Want to help improve the project? Pull Requests Welcome!
 
 ##
 
- [^1]: "DuckyScript™ is the programming language of the USB Rubber Ducky™, Hak5® hotplug attack gear and officially licensed devices. (Trademark Hak5 LLC. Copyright © 2010 Hak5 LLC. All rights reserved.)" -- Anything DuckyScript™ v2 and above, We can not support it at this time. Please do not ask.
+ [^1]: "DuckyScript™ is the programming language of the USB Rubber Ducky™, Hak5® hotplug attack gear and officially licensed devices. (Trademark Hak5 LLC. Copyright © 2010 Hak5 LLC. All rights reserved.)" -- Anything DuckyScript™ v2 and above, We CAN NOT support it at this time. Please do not ask.
  [^2]: If we are unsure of a command or feature, we will contact the Developer first before posting information and misleading the community.
 
