@@ -37,6 +37,7 @@ _**A.** Not yet, but in the process of being completed. This repo is supposed to
 
 
 **Q. So BadPS simulates a real BadUSB device?**
+
 _**A.** Yes. There's a few limitations such as - Not being able to do CTRL ALT DEL. Other known issue is if Windows User Security Prompt or any screen similar. Test and find out!_
 
 
