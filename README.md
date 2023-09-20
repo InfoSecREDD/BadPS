@@ -5,7 +5,7 @@
 ![Static Badge](https://img.shields.io/badge/Built_with-PowerShell-orange) ![Static Badge](https://img.shields.io/badge/Windows_10-Supported-lime) ![Static Badge](https://img.shields.io/badge/Windows_11-Supported-lime)
 ##
 
-This Project was created to give the Community the ability to develop BadUSB payloads without plugging in a device, loading the device, loading the dev payload, then executing on device. This allows "some" DuckyScript™[^1]/BadUSB scripts to be simulated as if a real Device was running the attack. More features will be added later. This project is meant for development and education purposes only. 
+This Project was created to give the Community the ability to develop BadUSB payloads without plugging in a device, loading the device, loading the experimental payload, then executing on device. This allows "some" DuckyScript™[^1]/BadUSB scripts to be simulated as if a real Device was running the attack. More features will be added later. This project is meant for development and education purposes only. 
 
 
 ## FAQ
