@@ -59,7 +59,7 @@ _**A.** Yes. There's a few limitations such as - Not being able to do CTRL ALT D
 
 
 > [!NOTE]
-> DuckyScript™ v1 has the same commands as BadUSB does so we are "allowed" to support any command that other OpenSource projects such as the Flipper Zero and other devices. - Also to preserve the history of DuckyScript™ and BadUSB alike.[^1]
+> DuckyScript™ v1 has the some of the same commands as BadUSB on other devices so we are "allowed" to support any command that other open source projects such as the Flipper Zero and other devices. - Also to preserve the history of deprecated DuckyScript™ and BadUSB commands alike.[^1]
 
 ##
 
