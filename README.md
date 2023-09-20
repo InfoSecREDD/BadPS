@@ -5,7 +5,7 @@
 ![Static Badge](https://img.shields.io/badge/Built_with-PowerShell-orange) ![Static Badge](https://img.shields.io/badge/Windows_10-Supported-lime) ![Static Badge](https://img.shields.io/badge/Windows_11-Supported-lime)
 ##
 
-This tool was created to give people the ability to develop BadUSB payloads without plugging in a device, loading the device, loading the dev payload, then executing on device. This allows "some" DuckyScript™[^1]/BadUSB scripts to be simulated as if a real Device was running the attack. More features will be added later. This project is meant for development and education purposes only. 
+This Project was created to give the Community the ability to develop BadUSB payloads without plugging in a device, loading the device, loading the dev payload, then executing on device. This allows "some" DuckyScript™[^1]/BadUSB scripts to be simulated as if a real Device was running the attack. More features will be added later. This project is meant for development and education purposes only. 
 
 
 ## FAQ
@@ -25,7 +25,7 @@ _**A.** Currently, this project only supports Windows 10 and Windows 11. - Hence
 
 **Q. So if I have a supported PC, I can just develop Payloads for free?**
 
-_**A.** Yes. This is meant to help the community develop/test/experience what BadUSB/DuckyScript™ is all about. Purely educational and for development._
+_**A.** Yes. This is meant to help the community develop/test/experience what BadUSB/DuckyScript™ is all about. Purely educational and for development purposes only._
 
 
 
