@@ -38,10 +38,10 @@ _**A.** Not yet, but in the process of being completed. This repo is supposed to
 
 **Supported Cores**
 
-| Core# | Versions     | 
-|------:|--------------|
-|      0| Flipper Zero |
-|      1| DuckyScriptV1| 
+| Core# | Versions                        | 
+|------:|---------------------------------|
+|      0| DuckyScriptV1                   |
+|      1| Flipper Zero BadUSB             | 
 
 **Future Cores**
 
