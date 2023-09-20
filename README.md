@@ -5,7 +5,7 @@
 ![Static Badge](https://img.shields.io/badge/Built_with-PowerShell-orange) ![Static Badge](https://img.shields.io/badge/Windows_10-Supported-lime) ![Static Badge](https://img.shields.io/badge/Windows_11-Supported-lime)
 ##
 
-This tool was created to give people the ability to develop BadUSB payloads without plugging in a device, loading the device, loading the dev payload, then executing on device. This allows the BadUSB script to be simulated as if a BadUSB Device was running the attack. More features will be added later. This project is meant for development and education purposes only. 
+This tool was created to give people the ability to develop BadUSB payloads without plugging in a device, loading the device, loading the dev payload, then executing on device. This allows "some" DuckyScript[^1]/BadUSB scripts to be simulated as if a real Device was running the attack. More features will be added later. This project is meant for development and education purposes only. 
 
 
 ## FAQ
@@ -32,7 +32,7 @@ _**A.** Yes. This is meant to help the community develop/test/experience what Ba
 
 **Q. Do you have a place where I can compare commands of all the versions?**
 
-_**A.** Not yet, but in the process of being completed. This repo is supposed to be as accurate as possible, and will only be posted on here once we can verify with documentation or via Developers._
+_**A.** Not yet, but in the process of being completed. This repo is supposed to be as accurate as possible, and will only be posted on here once we can verify with documentation or via Developers[^2]._
 
 
 
@@ -43,7 +43,7 @@ _**A.** Yes. There's a few limitations such as - Not being able to do CTRL ALT D
 
 ##
 
-**Supported Cores**
+**Supported Cores**[^1]
 
 | Core# | Versions                        | 
 |------:|---------------------------------|
@@ -61,6 +61,14 @@ _**A.** Yes. There's a few limitations such as - Not being able to do CTRL ALT D
 > [!NOTE]
 > DuckyScript 2+ is Trademarked and Copyrighted. We can not support it at this current time.
 
+##
+
+## Installation
+- Download the [latest release](https://github.com/InfoSecREDD/BadPS/releases) of this Repo.
+- Unzip the files into the folder of choice.
+- Place desired BadUSB/DuckyScript[^1] payload(s) in the same folder as BadPS. 
+- Use the syntaxes below for script you want to execute or to enter Dev Mode.
+- Enjoy!
 
 ##
 
@@ -106,5 +114,6 @@ Want to help improve the project? Pull Requests Welcome!
 > [!IMPORTANT]
 > Missing a Command? Found a bug? Let us know! Submit them to the [Issues](https://github.com/InfoSecREDD/BadPS/issues) section of this Repo.
 
-
+ [^1]: DuckyScript 2+ is Trademarked and Copyrighted. We can not support it at this current time.
+ [^2]: If we are unsure of a command or feature, we will contact the Developer first before posting information and misleading the community.
 
