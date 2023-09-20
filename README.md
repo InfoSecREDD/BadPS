@@ -25,7 +25,7 @@ _**A.** Currently, this project only supports Windows 10 and Windows 11. - Hence
 
 **Q. So if I have a supported PC, I can just develop Payloads for free?**
 
-_**A.** Yes. This is meant to help the community develop/test/experience what BadUSB/DuckyScript is all about. Purely educational and for development._
+_**A.** Yes. This is meant to help the community develop/test/experience what BadUSB/DuckyScript[^1] is all about. Purely educational and for development._
 
 
 
@@ -59,7 +59,7 @@ _**A.** Yes. There's a few limitations such as - Not being able to do CTRL ALT D
 
 
 > [!NOTE]
-> DuckyScript 2+ is Trademarked and Copyrighted. We can not support it at this current time.
+> DuckyScript™ is the programming language of the USB Rubber Ducky™, Hak5® hotplug attack gear and officially licensed devices. (Trademark Hak5 LLC. Copyright © 2010 Hak5 LLC. All rights reserved.) DuckyScript™ v1 has the same commands as BadUSB does so we are "allowed" to support any command that other OpenSource projects such as the Flipper Zero and other devices.[^1]
 
 ##
 
@@ -114,6 +114,6 @@ Want to help improve the project? Pull Requests Welcome!
 > [!IMPORTANT]
 > Missing a Command? Found a bug? Let us know! Submit them to the [Issues](https://github.com/InfoSecREDD/BadPS/issues) section of this Repo.
 
- [^1]: DuckyScript 2+ is Trademarked and Copyrighted. We can not support it at this current time.
+ [^1]: DuckyScript™ is Trademarked and Copyrighted. Anything DuckyScript™ v2 and above, We can not support it at this current time. Please do not ask.
  [^2]: If we are unsure of a command or feature, we will contact the Developer first before posting information and misleading the community.
 
