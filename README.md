@@ -11,7 +11,7 @@ This tool was created to give people the ability to develop BadUSB payloads with
 ## FAQ
 **Q. What does this project do?**
 
-_**A.** This project allows you to develop payloads for a device using the correct "core" without plugging in, transferring payload, disconnecting, reconnecting, then testing to see if it works. You don't even need to own a device. Just need a PC with a Supported OS._
+_**A.** This project allows you to develop payloads for a device using the correct "core" without plugging in, transferring payload, disconnecting, reconnecting, then testing to see if it works. You don't even need to own a device. Just need a PC with a supported OS._
 
 
 
