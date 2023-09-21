@@ -102,7 +102,7 @@ Un-Supported BadUSB Commands:
 
 ## Updating the Project
 We have made it about as easy as possible.
-```PowerShell> PS> .\BadPS.ps1 --update```
+```PS> .\BadPS.ps1 --update```
 OR
 Just type ``` update ``` in Dev Mode.
 
