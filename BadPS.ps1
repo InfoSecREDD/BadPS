@@ -6,9 +6,9 @@
 #     features will be added later. This project is meant for development
 #     and education purposes only. 
 # AUTHOR: InfoSecREDD
-# Version: 2.3.7
+# Version: 2.3.8
 # Target: Windows
-$version = "2.3.7"
+$version = "2.3.8"
 $source = @"
 using System;
 using System.Collections.Generic;
@@ -189,7 +189,7 @@ if ($args.Count -gt 0) {
     Write-Host "DELAY, DEFAULT_DELAY, BACKSPACE, ENTER, STRING_DELAY, GUI, ALT, CTRL, SHIFT, ESCAPE, "
     Write-Host "CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI, CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING,"
     Write-Host "TAB, SCROLLLOCK, CAPSLOCK, INSERT, SPACE, RELEASE, HOLD, PAUSE, REPEAT, ALTCHAR, ALTSTRING,"
-    Write-Host "PRINTSCREEN, WAIT_FOR_BUTTON_PRESS`n"
+    Write-Host "PRINTSCREEN, WAIT_FOR_BUTTON_PRESS, STRINGLN`n"
     Write-Host "Un-Supported BadUSB Commands:"
     Write-Host " CTRL-ALT DELETE (due to Windows Limits), Unknown`n`n`n"
     exit 0
@@ -1010,8 +1010,22 @@ function runFlipper {
             GuiShift
           }
         }
+        if ($line -match '^STRINGLN (.*)') {
+          $textAfterString = $matches[1]
+          foreach ($char in $textAfterString.ToCharArray()) {
+            if ( $char -eq " " ) {
+              SendKeys -SENDKEYS ' '
+            } else {
+              SendKeys -SENDKEYS "{$char}"
+            }
+          }
+          if (!([string]::IsNullOrEmpty($global:delayString))) {
+            $global:delayString = $null
+          }
+        }
         if ($line -match '^STRING (.*)') {
           $textAfterString = $matches[1]
+          $textAfterString = $textAfterString -replace '\s+', ' '
           foreach ($char in $textAfterString.ToCharArray()) {
             if ( $char -eq " " ) {
               SendKeys -SENDKEYS ' '
@@ -1256,6 +1270,17 @@ function runFlipper {
       }
     }
     if ($line -match '^STRING (.*)') {
+      $textAfterString = $matches[1]
+      $textAfterString = $textAfterString -replace '\s+', ' '
+      foreach ($char in $textAfterString.ToCharArray()) {
+        if ( $char -eq " " ) {
+          SendKeys -SENDKEYS ' '
+        } else {
+          SendKeys -SENDKEYS "{$char}"
+        }
+      }
+    }
+    if ($line -match '^STRINGLN (.*)') {
       $textAfterString = $matches[1]
       foreach ($char in $textAfterString.ToCharArray()) {
         if ( $char -eq " " ) {
@@ -1666,7 +1691,7 @@ function runMenu {
         Write-Host "${C}   ALT, CTRL, SHIFT, ESCAPE, CTRL-SHIFT, SHIFT-ALT, SHIFT-GUI,"
         Write-Host "${C}   CTRL-ALT, F1-12, UP, DOWN, LEFT, RIGHT, STRING, TAB, SCROLLLOCK,"
         Write-Host "${C}   CAPSLOCK, INSERT, SPACE, RELEASE, HOLD, PAUSE, REPEAT, ALTCHAR,"
-        Write-Host "${C}   ALTSTRING, PRINTSCREEN, WAIT_FOR_BUTTON_PRESS`n`n`n"
+        Write-Host "${C}   ALTSTRING, PRINTSCREEN, WAIT_FOR_BUTTON_PRESS, STRINGLN`n`n`n"
         Write-Host "`n`n`n Press any key to continue...`n`n`n`n`n"
         $null = Read-Host
       }
@@ -1740,12 +1765,20 @@ function runMenu {
         $j = [int]$global:payloadDelay
       }
       for ($i = $j; $i -ge 1; $i--) {
-        Write-Host -NoNewline "${W}Running file in ${BY}$i${W}..."
+        if ( $i -gt 2 ) {
+          Write-Host -NoNewline "${W}Running payload in ${BG}$i${W}..."
+        }
+        elseif ( $i -eq 2 ) {
+          Write-Host -NoNewline "${W}Running payload in ${BY}$i${W}..."
+        }
+        elseif ( $i -eq 1 ) {
+          Write-Host -NoNewline "${W}Running payload in ${BR}$i${W}..."
+        }
         Start-Sleep -Seconds 1
         [Console]::SetCursorPosition(0, [Console]::CursorTop)
         [Console]::CursorLeft = 0
       }
-      Write-Host "${W}Running File ${BG}NOW${W}!"
+      Write-Host "${BY}Running payload NOW!"
       if ( $global:core -eq "0" ) {
         runDucky1 -PAYLOAD "$file"
       }
@@ -1815,4 +1848,3 @@ while ($true) {
     $ChkRun = "1"
   }
 }
-
